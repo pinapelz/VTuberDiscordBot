@@ -70,8 +70,8 @@ public class Main extends ListenerAdapter {
             }
             msg = msg.toUpperCase();
             ArrayList<Message> messages = new ArrayList<Message>();
+            logCommand(e,"full hololive schedule " + msg);
             messages = hololive.getAllSchedule(msg);
-            //e.getChannel().sendMessage( hololive.getAllScheduleOld(msg)).queue();
             if(messages.size()==2){
                 e.getChannel().sendMessage(messages.get(0)).queue();
                 e.getChannel().sendMessage(messages.get(1)).queue();
@@ -81,22 +81,31 @@ public class Main extends ListenerAdapter {
             }
 
         }
-        if(msg.startsWith("!hololive")||msg.startsWith("!hl")&&!msg.contains("!hololive all")){
+        if(msg.startsWith("!hl")&&!msg.contains("!hololive all")){
             msg = msg.replaceAll("!hololive","");
             msg = msg.replaceAll("!hl","");
             Scanner parser = new Scanner(msg);
             String strIndex = parser.next();
-            System.out.println(strIndex);
             int index = Integer.parseInt(strIndex);
             msg = msg.replaceAll(strIndex,"");
             msg = msg.replaceAll("\\s+","");
             String timezone = msg;
+            timezone = timezone.toUpperCase();
+
             if(msg.equals("")||msg.equals(null)) {
                 timezone = "JST";
             }
+            logCommand(e,"hololive schedule index " + index + " in " + timezone);
             hololive.buildSchedule();
             e.getChannel().sendMessage(hololive.getSchedule(timezone,index)).queue();
         }
+
+        if(msg.equals("!sourcecode")){
+            e.getChannel().sendMessage("Source Code [Python and Java IDE needed]: https://drive.google.com/drive/folders/1vX1MTgExX7NerD9CvtsfgxScnayKwXWZ?usp=sharing").queue();
+        }
+    }
+    public void logCommand(MessageReceivedEvent e, String message){
+        System.out.println(returnTimestamp()+" " + e.getAuthor()+" requested " + message);
     }
     public static String returnTimestamp(){
         now = LocalDateTime.now();

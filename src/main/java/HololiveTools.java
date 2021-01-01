@@ -12,13 +12,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class HololiveTools {
+
     ArrayList<String> schedule = new ArrayList<String>();
+    String[] validTimezones = {"GMT","UTC","ECT","EET","ART","EAT","MET","NET",
+            "PLT","IST","BST","VST","CTT","JST","ACT","AET","SST","NST","MIT","HST","AST","PST",
+            "PNT","MST","CST","EST","IET","PRT","CNT","AGT","BET","CAT"};
     String DATE_FORMAT = "HH::MM";
+
 public String getSchedule(String timezone, int index){
     String s = schedule.get(index);
+    if(!validTimezone(timezone)){
+    return "Sorry that's not a supported timezone";
+    }
     Scanner parser = new Scanner(s);
     String time = parser.next();
-    System.out.println(time + " Parsed");
     SimpleDateFormat isoFormat = new SimpleDateFormat("HH:mm");
     isoFormat.setTimeZone(TimeZone.getTimeZone("JST"));
     String local = "";
@@ -32,9 +39,17 @@ public String getSchedule(String timezone, int index){
 
 return s;
 }
-
+public boolean validTimezone(String timezoneCheck){
+    for(int i = 0;i< validTimezones.length;i++){
+        if(validTimezones[i].equalsIgnoreCase(timezoneCheck)){
+            return true;
+        }
+    }
+    return false;
+}
 public void buildSchedule(){
-    schedule.removeAll(schedule);
+   schedule.clear();
+    final String dir = System.getProperty("user.dir");
     ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd holoCli && python main.py");
     builder.redirectErrorStream(true);
 
@@ -51,34 +66,6 @@ public void buildSchedule(){
         System.err.println("ERROR was not able to run the scraper\nPlease check that the holoCli directory is present and that Python is installed");
     }
 }
-    public Message getAllScheduleOld(String timezone){
-        buildSchedule();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-        LocalDateTime now = LocalDateTime.now();
-        EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1")
-                .setFooter("Retreived at PST "+dtf.format(now) +"- DS",
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
-                .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
-
-
-        String[] info = new String[5];
-            for (int i = 1; i < schedule.size() - 1; i++) {
-                info = getInfo(i, timezone);
-                if (info[4].equals("passed")) {
-                    embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", "~~ " + info[3] + " ~~", false);
-                    System.out.println("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~");
-                } else {
-                    embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
-                }
-            }
-        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
-                .setEmbed(embed.build());
-            return messageBuilder.build();
-    }
-
-
 
 public ArrayList<Message> getAllSchedule(String timezone){
     buildSchedule();
@@ -90,7 +77,14 @@ public ArrayList<Message> getAllSchedule(String timezone){
             .setFooter("Retreived at PST "+dtf.format(now) +"- DS",
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
             .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
-
+    if(!validTimezone(timezone)){
+    embed.addField("An Error has occured","Sorry this is not a valid timezone",false);
+        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
+                .setEmbed(embed.build());
+        messages.add(messageBuilder.build());
+        return messages;
+    }
 
     String[] info = new String[5];
     if(schedule.size()>25){
@@ -111,10 +105,10 @@ public ArrayList<Message> getAllSchedule(String timezone){
         EmbedBuilder embed2 = new EmbedBuilder().setFooter("Retreived at PST "+dtf.format(now) +"- DS",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png");
 
-        for (int i = 26; i < schedule.size()-1; i++) {
+        for (int i = 26; i < schedule.size(); i++) {
             info = getInfo(i, timezone);
             if (info[4].equals("passed")) {
-                embed2.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", "~~ " + info[3] + " ~~", false);
+                embed2.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
 
 
             } else {
@@ -133,14 +127,14 @@ public ArrayList<Message> getAllSchedule(String timezone){
         for (int i = 1; i < schedule.size() - 1; i++) {
             info = getInfo(i, timezone);
             if (info[4].equals("passed")) {
-                embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", "~~ " + info[3] + " ~~", false);
+                embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
             } else {
                 embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
             }
 
         }
         MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nBased off of 24 Hours in PST so if your stream doesn't show please use !hololivetomorrow *timezone* WIP")
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
                 .setEmbed(embed.build());
         messages.add(messageBuilder.build());
         return messages;
@@ -150,7 +144,7 @@ public ArrayList<Message> getAllSchedule(String timezone){
 
 
 }
-public boolean hasPassed(String stream, String currentTime){
+public boolean hasPassed(String stream, String currentTime, int index){
     stream = stream.replaceAll(":","    ");
     currentTime = currentTime.replaceAll(":","    ");
     Scanner parser = new Scanner(stream);
@@ -170,7 +164,9 @@ public boolean hasPassed(String stream, String currentTime){
     if(streamHour==0){
         streamHour=24;
     }
-
+    if(index<10&&streamHour==24){
+        return true;
+    }
     if(currentHour>=streamHour&&currentHour!=streamHour){
 
         return true;
@@ -180,7 +176,6 @@ public boolean hasPassed(String stream, String currentTime){
         return false;
     }
     else if(currentHour==streamHour){
-        System.out.println("Equals");
         if(currentMinutes>streamMinutes){
 
             return true;
@@ -191,7 +186,6 @@ public boolean hasPassed(String stream, String currentTime){
 
     }
     else{
-        System.out.println("AAAA");
         return false;
     }
 
@@ -221,7 +215,7 @@ public String[] getInfo(int index, String timezone){
         Date dateNow = new Date();
         String localtoJST = convertDate(dateNow,"HH:mm","JST");
 
-        if(hasPassed(streamTimeJST,localtoJST)){
+        if(hasPassed(streamTimeJST,localtoJST,index)){
 
             information[4] = "passed";
 
