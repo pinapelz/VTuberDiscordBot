@@ -16,7 +16,7 @@ public class Main extends ListenerAdapter {
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static LocalDateTime now = LocalDateTime.now();
     HololiveTools hololive  = new HololiveTools();
-    public static  JDABuilder jdabuilder= JDABuilder.createDefault("APIKEY").addEventListeners(new Main());
+    public static  JDABuilder jdabuilder= JDABuilder.createDefault("NDI1ODgxOTE5NzAwMzM2NjQy.WrHncg.Sihz2o59sjvsyGpNORmkx1UvBnI").addEventListeners(new Main());
     public static JDA jda;
     public static void main(String args[]){
         PingPong ping = new PingPong();
