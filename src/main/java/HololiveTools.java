@@ -47,6 +47,31 @@ public boolean validTimezone(String timezoneCheck){
     }
     return false;
 }
+    public void buildScheduleLinux(){
+        schedule.clear();
+        final String dir = System.getProperty("user.dir");
+        try {
+            Process p = Runtime.getRuntime().exec(new String[]{"bash","-c","cd holoCli && python3 main.py"});
+            //TimeUnit.SECONDS.sleep(3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+        try {
+
+            try ( BufferedReader br = new BufferedReader(new FileReader("holoCli/hololive.txt"))) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    schedule.add(line);
+                }
+                fixNames();
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR was not able to run the scraper\nPlease check that the holoCli directory is present and that Python is installed");
+        }
+    }
 public void buildSchedule(){
    schedule.clear();
     final String dir = System.getProperty("user.dir");
@@ -87,6 +112,7 @@ public ArrayList<Message> getAllSchedule(String timezone){
     }
 
     String[] info = new String[5];
+    System.out.println(schedule.size());
     if(schedule.size()>25){
 
         for (int i = 1; i < 26; i++) {
@@ -114,6 +140,7 @@ public ArrayList<Message> getAllSchedule(String timezone){
             } else {
                 embed2.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
 
+
             }
         }
         MessageBuilder messageBuilder2 = (MessageBuilder) new MessageBuilder()
@@ -124,12 +151,13 @@ public ArrayList<Message> getAllSchedule(String timezone){
     }
 
     else {
-        for (int i = 1; i < schedule.size() - 1; i++) {
+        for (int i = 1; i < schedule.size() ; i++) {
             info = getInfo(i, timezone);
             if (info[4].equals("passed")) {
                 embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
             } else {
                 embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
+
             }
 
         }
