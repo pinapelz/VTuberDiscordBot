@@ -76,7 +76,12 @@ public class Main extends ListenerAdapter {
 
         if (msg.equals("!hololive refresh") || msg.equals("!hl refresh")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
+            try{
             hololive.buildScheduleLinux();
+            }
+            catch(Exception ex){
+              System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+            }
             logCommand(e, "manual hololive schedule refresh");
             e.getChannel().sendMessage("Hololive Schedule has been manually refreshed").queue();
         }
@@ -116,7 +121,12 @@ public class Main extends ListenerAdapter {
             }
             logCommand(e, "hololive schedule index " + index + " in " + timezone);
             e.getChannel().sendMessage(hololive.getSchedule(timezone, index)).queue();
-            hololive.buildScheduleLinux();
+            try{
+                hololive.buildScheduleLinux();
+                }
+                catch(Exception ex){
+                  System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+                }
         } else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
             System.out.println("Upcoming");
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
@@ -133,7 +143,12 @@ public class Main extends ListenerAdapter {
             logCommand(e, "hololive upcoming streams " + " in " + timezone);
             ArrayList<Message> messages = new ArrayList<Message>();
             logCommand(e, "full hololive schedule " + msg);
-            hololive.buildScheduleLinux();
+            try{
+                hololive.buildScheduleLinux();
+                }
+                catch(Exception ex){
+                  System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+                }
             messages = hololive.getUpcomingStreams(timezone);
             if (messages.size() == 2) {
                 e.getChannel().sendMessage(messages.get(0)).queue();

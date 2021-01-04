@@ -94,7 +94,12 @@ public void buildSchedule(){
     }
 }
 public ArrayList<Message> getUpcomingStreams(String timezone) {
-    buildScheduleLinux();
+                try{
+        hololive.buildScheduleLinux();
+        }
+        catch(Exception ex){
+          System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+        }
     ArrayList<Message> messages = new ArrayList<Message>();
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
@@ -170,7 +175,12 @@ public ArrayList<Message> getUpcomingStreams(String timezone) {
 }
 
 public ArrayList<Message> getAllSchedule(String timezone){
-    buildScheduleLinux();
+    try{
+        hololive.buildScheduleLinux();
+        }
+        catch(Exception ex){
+          System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+        }
     ArrayList<Message> messages = new ArrayList<Message>();
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 

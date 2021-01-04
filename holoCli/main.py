@@ -37,7 +37,6 @@ def main(options):
     stream_members_list = replace_name(stream_members_list, lists_length)
     hour_list = list(map(lambda x: int(x.split(':')[0]), time_list))
 
-    #Check if date is shifted
     if hour_list != sorted(hour_list):
         date_shift = True
         shift_index = check_shift(hour_list)
@@ -46,7 +45,6 @@ def main(options):
         date_shift = False
         shift_index = (256, 256)
 
-    # Show in Japanese
     print('Index   Time       Member              Streaming URL  ({})'.format(timezone))
     #f.write('Index   Time       Member              Streaming URL  ({})'.format(timezone))
 
@@ -100,7 +98,6 @@ if __name__ == '__main__':
             print("Invalid argument")
             sys.exit()
 
-        # If inputed option is invalid eval_argv returns None
         if argv is None:
             print('Error: invalid options. Execute with --help to check about options')
             sys.exit()
@@ -110,6 +107,5 @@ if __name__ == '__main__':
             main(argv)
           
 
-    #No option
     else:
         main(None)
