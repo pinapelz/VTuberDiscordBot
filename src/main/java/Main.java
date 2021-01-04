@@ -103,7 +103,6 @@ public class Main extends ListenerAdapter {
         } else if (msg.startsWith("!hl") && !msg.contains("!hololive all") && !msg.contains("!hl all") && !msg.contains("!hl upcoming") && !msg.contains("!hololive upcoming")) {
             msg = msg.replaceAll("!hololive", "");
             msg = msg.replaceAll("!hl", "");
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             Scanner parser = new Scanner(msg);
             String strIndex = parser.next();
             int index = Integer.parseInt(strIndex);
@@ -116,8 +115,8 @@ public class Main extends ListenerAdapter {
                 timezone = "JST";
             }
             logCommand(e, "hololive schedule index " + index + " in " + timezone);
-            hololive.buildScheduleLinux();
             e.getChannel().sendMessage(hololive.getSchedule(timezone, index)).queue();
+            hololive.buildScheduleLinux();
         } else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
             System.out.println("Upcoming");
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();

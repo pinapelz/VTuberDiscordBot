@@ -1,6 +1,8 @@
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.text.ParseException;
@@ -8,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class HololiveTools {
 
@@ -50,7 +53,7 @@ public boolean validTimezone(String timezoneCheck){
         final String dir = System.getProperty("user.dir");
         try {
             Process p = Runtime.getRuntime().exec(new String[]{"bash","-c","cd holoCli && python3 main.py"});
-            //TimeUnit.SECONDS.sleep(3);
+            TimeUnit.MILLISECONDS.sleep(2500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,6 +66,7 @@ public boolean validTimezone(String timezoneCheck){
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     schedule.add(line);
+
                 }
                 fixNames();
             }
@@ -89,28 +93,103 @@ public void buildSchedule(){
         System.err.println("ERROR was not able to run the scraper\nPlease check that the holoCli directory is present and that Python is installed");
     }
 }
-
-public ArrayList<Message> getAllSchedule(String timezone){
-    buildSchedule();
+public ArrayList<Message> getUpcomingStreams(String timezone) {
+    buildScheduleLinux();
     ArrayList<Message> messages = new ArrayList<Message>();
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
     LocalDateTime now = LocalDateTime.now();
-    EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1")
-            .setFooter("Retreived at PST "+dtf.format(now) +"- DS",
+    EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1").setColor(new Color(3725533))
+            .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
             .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
-    if(!validTimezone(timezone)){
-    embed.addField("An Error has occured","Sorry this is not a valid timezone",false);
+    if (!validTimezone(timezone)) {
+        embed.addField("An Error has occured", "Sorry this is not a valid timezone", false);
         MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
                 .setEmbed(embed.build());
         messages.add(messageBuilder.build());
         return messages;
     }
 
     String[] info = new String[5];
-    System.out.println(schedule.size());
+    if (schedule.size() > 25) {
+
+        for (int i = 1; i < 26; i++) {
+            info = getInfo(i, timezone);
+            if (info[4].equals("passed")) {
+
+            } else {
+                embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
+            }
+
+
+        }
+        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
+                .setEmbed(embed.build());
+        messages.add(messageBuilder.build());
+        EmbedBuilder embed2 = new EmbedBuilder().setFooter("Retreived at PST " + dtf.format(now) + "- DS",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png").setColor(new Color(3725533));
+
+        for (int i = 26; i < schedule.size(); i++) {
+            info = getInfo(i, timezone);
+            if (info[4].equals("passed")) {
+                embed2.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
+
+
+            } else {
+                embed2.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
+
+
+            }
+        }
+        MessageBuilder messageBuilder2 = (MessageBuilder) new MessageBuilder()
+                .setEmbed(embed2.build());
+        messages.add(messageBuilder2.build());
+        return messages;
+
+    }
+    else {
+        for (int i = 1; i < schedule.size() ; i++) {
+            info = getInfo(i, timezone);
+            if (info[4].equals("passed")) {
+
+            } else {
+                embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
+
+            }
+
+        }
+        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
+                .setEmbed(embed.build());
+        messages.add(messageBuilder.build());
+        return messages;
+    }
+}
+
+public ArrayList<Message> getAllSchedule(String timezone){
+    buildScheduleLinux();
+    ArrayList<Message> messages = new ArrayList<Message>();
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
+    LocalDateTime now = LocalDateTime.now();
+    EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1").setColor(new Color(3725533))
+            .setFooter("Retreived at PST "+dtf.format(now) +"- DS",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
+            .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
+    if(!validTimezone(timezone)){
+    embed.addField("An Error has occured","Sorry this is not a valid timezone",false);
+        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
+                .setEmbed(embed.build());
+        messages.add(messageBuilder.build());
+        return messages;
+    }
+
+    String[] info = new String[5];
+
     if(schedule.size()>25){
 
         for (int i = 1; i < 26; i++) {
@@ -123,11 +202,11 @@ public ArrayList<Message> getAllSchedule(String timezone){
 
         }
         MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
                 .setEmbed(embed.build());
         messages.add(messageBuilder.build());
         EmbedBuilder embed2 = new EmbedBuilder().setFooter("Retreived at PST "+dtf.format(now) +"- DS",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png");
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png").setColor(new Color(3725533));
 
         for (int i = 26; i < schedule.size(); i++) {
             info = getInfo(i, timezone);
@@ -160,7 +239,7 @@ public ArrayList<Message> getAllSchedule(String timezone){
 
         }
         MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out")
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
                 .setEmbed(embed.build());
         messages.add(messageBuilder.build());
         return messages;
@@ -219,15 +298,17 @@ public boolean hasPassed(String stream, String currentTime, int index){
 }
 public String[] getInfo(int index, String timezone){
     String rawData = schedule.get(index);
+    System.out.println(rawData);
     rawData = rawData.replaceAll("~", "");
-    Scanner parser = new Scanner(rawData);
-    String time  = parser.next();
+    Scanner input = new Scanner(rawData);
+    String time  = input.next();
     rawData = rawData.replaceAll(time,"");
-    String firstName = parser.next();
+    String firstName = input.next();
     rawData = rawData.replaceAll(firstName,"");
-    String lastName  = parser.next();
+    String lastName  = input.next();
     rawData = rawData.replaceAll(lastName,"");
-    String link = parser.next();
+
+    String link = input.next();
     String[]  information = new String[5];
     time = time.replaceAll("\\s+","");
     SimpleDateFormat isoFormat = new SimpleDateFormat("HH:mm");
@@ -258,8 +339,9 @@ public String[] getInfo(int index, String timezone){
     return information;
 }
 public void fixNames(){
-    for (int i = 1; i < schedule.size()-1; i++) {
+    for (int i = 1; i < schedule.size(); i++) {
         String index  = schedule.get(i);
+
         index = index.replaceAll("Risu","Ayunda Risu");
         index = index.replaceAll("Iofi","Airani Iofifteen");
         index = index.replaceAll("Ina", "Ninomae Ina'nis");
@@ -277,6 +359,9 @@ public void fixNames(){
         index = index.replaceAll("Amelia", "Amelia Watson");
         index = index.replaceAll("holoEN","HololiveEN Ch.");
         index = index.replaceAll("Roboco-san","Roboco Ch.");
+        index = index.replaceAll("Yuzuki Choko Sub","Yuzuki Choco");
+        index = index.replaceAll("hololive","Hololive Ch.");
+
         index = index.replaceAll("~","");
         schedule.set(i, index);
     }
