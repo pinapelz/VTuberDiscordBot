@@ -95,7 +95,7 @@ public void buildSchedule(){
 }
 public ArrayList<Message> getUpcomingStreams(String timezone) {
                 try{
-        hololive.buildScheduleLinux();
+        buildScheduleLinux();
         }
         catch(Exception ex){
           System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
@@ -176,7 +176,7 @@ public ArrayList<Message> getUpcomingStreams(String timezone) {
 
 public ArrayList<Message> getAllSchedule(String timezone){
     try{
-        hololive.buildScheduleLinux();
+        buildScheduleLinux();
         }
         catch(Exception ex){
           System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
