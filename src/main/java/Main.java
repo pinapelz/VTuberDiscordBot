@@ -19,6 +19,7 @@ public class Main extends ListenerAdapter {
 
     public static void main(String args[]) {
         PingPong ping = new PingPong();
+        hololive.buildScheduleLinux();
         try {
             jdabuilder.addEventListeners(ping);
             jda = jdabuilder.build();
@@ -85,6 +86,17 @@ public class Main extends ListenerAdapter {
             logCommand(e, "manual hololive schedule refresh");
             e.getChannel().sendMessage("Hololive Schedule has been manually refreshed").queue();
         }
+        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
+            msg = msg.replaceAll("!holoen","");
+            msg = msg.replaceAll("!hlen","");
+            msg = msg.replaceAll("\\s+", "");
+            String timezone = msg;
+            logCommand(e, "hololive EN schedule");
+            ArrayList<Message> messages = new ArrayList<Message>();
+            messages = hololive.holoENSchedule(timezone);
+            e.getChannel().sendMessage(messages.get(0)).queue();
+            hololive.buildScheduleLinux();
+        }
         if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             System.out.println(returnTimestamp() + " Full Schedule Requested");
@@ -101,7 +113,11 @@ public class Main extends ListenerAdapter {
             if (messages.size() == 2) {
                 e.getChannel().sendMessage(messages.get(0)).queue();
                 e.getChannel().sendMessage(messages.get(1)).queue();
-            } else {
+            }
+            else if(messages.size()==0){
+                logCommand(e,"Error Value Returned");
+            }
+            else {
                 e.getChannel().sendMessage(messages.get(0)).queue();
             }
 
