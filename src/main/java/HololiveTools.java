@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
