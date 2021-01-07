@@ -1,11 +1,16 @@
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.awt.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -18,10 +23,10 @@ public class Main extends ListenerAdapter {
     public static JDA jda;
 
     public static void main(String args[]) {
-        PingPong ping = new PingPong();
+        BotTool bottool = new BotTool();
         hololive.buildScheduleLinux();
         try {
-            jdabuilder.addEventListeners(ping);
+            jdabuilder.addEventListeners(bottool);
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started");
 
@@ -39,54 +44,14 @@ public class Main extends ListenerAdapter {
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
 
-        if (msg.startsWith("!setplaying")) {
-            boolean allowChange = false;
-            Role admin = e.getGuild().getRoleById("794482971830648843");
-            for (int i = 0; i < e.getMember().getRoles().size(); i++) {
-                if (e.getMember().getRoles().get(i).equals(admin)) {
-                    allowChange = true;
-                }
-            }
-            if (allowChange) {
-                String playingMessage = msg.replaceAll("!setplaying", "");
-                System.out.println(returnTimestamp() + " Request to change playing message received");
-                jda.getPresence().setActivity(Activity.playing(playingMessage));
-                e.getChannel().sendMessage("Playing Status Succsessfully Changed").queue();
-            } else {
-                e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
-            }
-
-
-        } else if (msg.startsWith("!setwatching")) {
-            boolean allowChange = false;
-            Role admin = e.getGuild().getRoleById("794482971830648843");
-            for (int i = 0; i < e.getMember().getRoles().size(); i++) {
-                if (e.getMember().getRoles().get(i).equals(admin)) {
-                    allowChange = true;
-                }
-            }
-            if (allowChange) {
-                String watchingMessage = msg.replaceAll("!setwatching", "");
-                System.out.println(returnTimestamp() + " Request to change watching message received");
-                jda.getPresence().setActivity(Activity.watching(watchingMessage));
-                e.getChannel().sendMessage("Watching Status Succsessfully Changed").queue();
-            } else {
-                e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
-            }
-        }
-
-        if (msg.equals("!hololive refresh") || msg.equals("!hl refresh")) {
+        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             try{
-            hololive.buildScheduleLinux();
+                hololive.buildScheduleLinux();
             }
             catch(Exception ex){
-              System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
             }
-            logCommand(e, "manual hololive schedule refresh");
-            e.getChannel().sendMessage("Hololive Schedule has been manually refreshed").queue();
-        }
-        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
             msg = msg.replaceAll("!holoen","");
             msg = msg.replaceAll("!hlen","");
             msg = msg.replaceAll("\\s+", "");
@@ -97,82 +62,10 @@ public class Main extends ListenerAdapter {
             e.getChannel().sendMessage(messages.get(0)).queue();
             hololive.buildScheduleLinux();
         }
-        if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
-            System.out.println(returnTimestamp() + " Full Schedule Requested");
-            msg = msg.replaceAll("!hololive all", "");
-            msg = msg.replaceAll("!hl all", "");
-            msg = msg.replaceAll("\\s+", "");
-            if (msg.equals("") || msg.equals(null)) {
-                msg = "JST";
-            }
-            msg = msg.toUpperCase();
-            ArrayList<Message> messages = new ArrayList<Message>();
-            logCommand(e, "full hololive schedule " + msg);
-            messages = hololive.getAllSchedule(msg);
-            if (messages.size() == 2) {
-                e.getChannel().sendMessage(messages.get(0)).queue();
-                e.getChannel().sendMessage(messages.get(1)).queue();
-            }
-            else if(messages.size()==0){
-                logCommand(e,"Error Value Returned");
-            }
-            else {
-                e.getChannel().sendMessage(messages.get(0)).queue();
-            }
 
-        } else if (msg.startsWith("!hl") && !msg.contains("!hololive all") && !msg.contains("!hl all") && !msg.contains("!hl upcoming") && !msg.contains("!hololive upcoming")) {
-            msg = msg.replaceAll("!hololive", "");
-            msg = msg.replaceAll("!hl", "");
-            Scanner parser = new Scanner(msg);
-            String strIndex = parser.next();
-            int index = Integer.parseInt(strIndex);
-            msg = msg.replaceAll(strIndex, "");
-            msg = msg.replaceAll("\\s+", "");
-            String timezone = msg;
-            timezone = timezone.toUpperCase();
 
-            if (msg.equals("") || msg.equals(null)) {
-                timezone = "JST";
-            }
-            logCommand(e, "hololive schedule index " + index + " in " + timezone);
-            e.getChannel().sendMessage(hololive.getSchedule(timezone, index)).queue();
-            try{
-                hololive.buildScheduleLinux();
-                }
-                catch(Exception ex){
-                  System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-                }
-        } else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
-            System.out.println("Upcoming");
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
-            msg = msg.replaceAll("!hololive upcoming", "");
-            msg = msg.replaceAll("!hl upcoming", "");
-            Scanner parser = new Scanner(msg);
-            msg = msg.replaceAll("\\s+", "");
-            String timezone = msg;
-            timezone = timezone.replaceAll("\\s+", "");
-            timezone = timezone.toUpperCase();
-            if (msg.equals("") || msg.equals(null)) {
-                timezone = "JST";
-            }
-            logCommand(e, "hololive upcoming streams " + " in " + timezone);
-            ArrayList<Message> messages = new ArrayList<Message>();
-            logCommand(e, "full hololive schedule " + msg);
-            try{
-                hololive.buildScheduleLinux();
-                }
-                catch(Exception ex){
-                  System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-                }
-            messages = hololive.getUpcomingStreams(timezone);
-            if (messages.size() == 2) {
-                e.getChannel().sendMessage(messages.get(0)).queue();
-                e.getChannel().sendMessage(messages.get(1)).queue();
-            } else {
-                e.getChannel().sendMessage(messages.get(0)).queue();
-            }
-        }
+
+
 
         if (msg.equals("!sourcecode")) {
             e.getChannel().sendMessage("Source Code [Python and Java IDE needed]: https://drive.google.com/drive/folders/1vX1MTgExX7NerD9CvtsfgxScnayKwXWZ?usp=sharing").queue();
@@ -187,6 +80,7 @@ public class Main extends ListenerAdapter {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";
     }
+
 
 }
 
