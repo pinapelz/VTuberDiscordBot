@@ -193,6 +193,7 @@ public class HololiveTools extends ListenerAdapter {
                 .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                         "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
                 .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
+
         if (!validTimezone(timezone)) {
             embed.addField("An Error has occured", "Sorry this is not a valid timezone", false);
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()

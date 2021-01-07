@@ -23,12 +23,14 @@ public class Main extends ListenerAdapter {
     public static JDA jda;
 
     public static void main(String args[]) {
+
         BotTool bottool = new BotTool();
         hololive.buildScheduleLinux();
         try {
             jdabuilder.addEventListeners(bottool);
+            jdabuilder.addEventListeners(hololive);
             jda = jdabuilder.build();
-            System.out.println(returnTimestamp() + " Bot Succsessfully Started");
+            System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 
 
         } catch (Exception e) {
@@ -46,6 +48,7 @@ public class Main extends ListenerAdapter {
 
         if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
+
             try{
                 hololive.buildScheduleLinux();
             }
@@ -55,6 +58,9 @@ public class Main extends ListenerAdapter {
             msg = msg.replaceAll("!holoen","");
             msg = msg.replaceAll("!hlen","");
             msg = msg.replaceAll("\\s+", "");
+            if (msg.equals("") || msg.equals(null)) {
+                msg = "JST";
+            }
             String timezone = msg;
             logCommand(e, "hololive EN schedule");
             ArrayList<Message> messages = new ArrayList<Message>();
