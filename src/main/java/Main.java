@@ -1,11 +1,21 @@
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Channel;
+import com.google.api.services.youtube.model.ChannelListResponse;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.io.IOException;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends ListenerAdapter {
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -13,7 +23,12 @@ public class Main extends ListenerAdapter {
     static HololiveTools hololive = new HololiveTools();
     public static JDABuilder jdabuilder = JDABuilder.createDefault("NDI1ODgxOTE5NzAwMzM2NjQy.WrHncg.EwP_DlU_iRqciL4Kn9kn9ytytUI").addEventListeners(new Main());
     public static JDA jda;
-
+    final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
+        public void initialize(HttpRequest request) throws IOException {
+        }
+    };
+    YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
     public static void main(String args[]) {
 
         BotTool bottool = new BotTool();
@@ -37,33 +52,12 @@ public class Main extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
+        if(msg.startsWith("!hlsearch")){
 
-        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
+            String s = msg.replaceAll("!hlsearch","");
+             s.replaceAll("\\s+", "");
 
-            try{
-                hololive.buildScheduleLinux();
-            }
-            catch(Exception ex){
-                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-            }
-            msg = msg.replaceAll("!holoen","");
-            msg = msg.replaceAll("!hlen","");
-            msg = msg.replaceAll("\\s+", "");
-            if (msg.equals("") || msg.equals(null)) {
-                msg = "JST";
-            }
-            String timezone = msg;
-            logCommand(e, "hololive EN schedule");
-            ArrayList<Message> messages = new ArrayList<Message>();
-            messages = hololive.holoENSchedule(timezone);
-            e.getChannel().sendMessage(messages.get(0)).queue();
-            hololive.buildScheduleLinux();
         }
-
-
-
-
 
         if (msg.equals("!sourcecode")) {
             e.getChannel().sendMessage("Source Code [Python and Java IDE needed]: https://drive.google.com/drive/folders/1vX1MTgExX7NerD9CvtsfgxScnayKwXWZ?usp=sharing").queue();
@@ -78,7 +72,24 @@ public class Main extends ListenerAdapter {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";
     }
+public int getSubcount(String id){
+        try {
+            BigInteger subs;
+            YouTube.Channels.List search = youTube.channels().list("statistics");
+            search.setId(id);
+            search.setKey(apiKey);
+            ChannelListResponse response = search.execute();
+            List<Channel> channels = response.getItems();
+            for (Channel channel : channels) {
+                subs = channel.getStatistics().getSubscriberCount();
+                return subs.intValue();
+            }
+        }catch(Exception e){
 
+        }
+        return 0;
+
+}
 
 }
 

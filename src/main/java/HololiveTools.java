@@ -7,22 +7,36 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class HololiveTools extends ListenerAdapter {
-
     ArrayList<String> schedule = new ArrayList<String>();
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
             "PLT", "IST", "BST", "VST", "CTT", "JST", "ACT", "AET", "SST", "NST", "MIT", "HST", "AST", "PST",
             "PNT", "MST", "CST", "EST", "IET", "PRT", "CNT", "AGT", "BET", "CAT"};
     String DATE_FORMAT = "HH::MM";
     String[] enMembers = {"Gawr Gura", "Amelia Watson", "Ninomae Ina'nis", "Takanashi Kiara", "Mori Calliope"};
+    HashMap<String, String> memberIDMap = memberChannelID();
 
+    public HashMap<String, String> memberChannelID(){
+        String delimiter = ":";
+        HashMap<String, String> map = new HashMap<>();
+        try(Stream<String> lines = Files.lines(Paths.get("holoCli\\text\\memberID.txt"))){
+            lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedtring(line.split(delimiter)[0]), line.split(delimiter)[1]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
     public String getSchedule(String timezone, int index) {
         String s = schedule.get(index);
         if (!validTimezone(timezone)) {
@@ -58,7 +72,8 @@ public class HololiveTools extends ListenerAdapter {
         final String dir = System.getProperty("user.dir");
         try {
             Process p = Runtime.getRuntime().exec(new String[]{"bash", "-c", "cd holoCli && python3 main.py"});
-            TimeUnit.MILLISECONDS.sleep(2500);
+            p.waitFor();
+            System.out.println("Done Building Schedule");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,6 +115,7 @@ public class HololiveTools extends ListenerAdapter {
     }
 
     public ArrayList<Message> getUpcomingStreams(String timezone) {
+
         try {
             buildScheduleLinux();
         } catch (Exception ex) {
@@ -269,6 +285,7 @@ public class HololiveTools extends ListenerAdapter {
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png").setColor(new Color(3725533));
 
             for (int i = 26; i < schedule.size(); i++) {
+
                 info = getInfo(i, timezone);
                 if (info[4].equals("passed")) {
                     embed2.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
@@ -394,7 +411,6 @@ public class HololiveTools extends ListenerAdapter {
     public void fixNames() {
         for (int i = 1; i < schedule.size(); i++) {
             String index = schedule.get(i);
-
             index = index.replaceAll("Risu", "Ayunda Risu");
             index = index.replaceAll("Moona", "Moona Hoshinova");
             index = index.replaceAll("Iofi", "Airani Iofifteen");
@@ -415,10 +431,37 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Roboco-san", "Roboco Ch.");
             index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
             index = index.replaceAll("hololive", "Hololive Ch.");
+            index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
 
             index = index.replaceAll("~", "");
             schedule.set(i, index);
         }
+    }
+    public String getFixedtring(String index) {
+            index = index.replaceAll("Risu", "Ayunda Risu");
+            index = index.replaceAll("Moona", "Moona Hoshinova");
+            index = index.replaceAll("Iofi", "Airani Iofifteen");
+            index = index.replaceAll("Ina", "Ninomae Ina'nis");
+            index = index.replaceAll("holostars", "Holostars Ch");
+            index = index.replaceAll("AZKi", "AZKi Music");
+            index = index.replaceAll("Rikka", "Rikka Ch");
+            index = index.replaceAll("Arurandeisu", "Arurandeisu Ch");
+            index = index.replaceAll("Ollie", "Kureiji Ollie");
+            index = index.replaceAll("Anya", "Anya Melfissa");
+            index = index.replaceAll("Reine", "Pavolia Reine");
+            index = index.replaceAll("holoID", "HololiveID Ch");
+            index = index.replaceAll("Calli", "Mori Calliope");
+            index = index.replaceAll("Kiara", "Takanashi Kiara");
+            index = index.replaceAll("Gura", "Gawr Gura");
+            index = index.replaceAll("Amelia", "Amelia Watson");
+            index = index.replaceAll("holoEN", "HololiveEN Ch");
+            index = index.replaceAll("Roboco-san", "Roboco Ch");
+            index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
+            index = index.replaceAll("hololive", "Hololive Ch");
+            index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
+            index = index.replaceAll("~", "");
+            return index;
+
     }
 
     public static String convertDate(Date date, String format, String timeZone) {
@@ -450,6 +493,31 @@ public class HololiveTools extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
+        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
+            System.out.println(Collections.singletonList(memberIDMap)); // method 2
+            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
+
+            try{
+                buildScheduleLinux();
+            }
+            catch(Exception ex){
+                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
+            }
+            msg = msg.replaceAll("!holoen","");
+            msg = msg.replaceAll("!hlen","");
+            msg = msg.replaceAll("\\s+", "");
+            msg = msg.toUpperCase();
+            if (msg.equals("") || msg.equals(null)) {
+                msg = "JST";
+            }
+            String timezone = msg;
+            logCommand(e, "hololive EN schedule");
+            ArrayList<Message> messages = new ArrayList<Message>();
+            messages = holoENSchedule(timezone);
+            e.getChannel().sendMessage(messages.get(0)).queue();
+            buildScheduleLinux();
+        }
+
         if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             msg = msg.replaceAll("!hololive all", "");
@@ -477,7 +545,7 @@ public class HololiveTools extends ListenerAdapter {
 
 
 
-        else if (msg.startsWith("!hl") && !msg.contains("!hololive all") && !msg.contains("!hl all") && !msg.contains("!hl upcoming") && !msg.contains("!hololive upcoming")) {
+        else if (msg.startsWith("!hl") &&!msg.contains("!hlsearch")&& !msg.contains("!hololive all") && !msg.contains("!hl all") && !msg.contains("!hl upcoming") && !msg.contains("!hololive upcoming")) {
             msg = msg.replaceAll("!hololive", "");
             msg = msg.replaceAll("!hl", "");
             Scanner parser = new Scanner(msg);
