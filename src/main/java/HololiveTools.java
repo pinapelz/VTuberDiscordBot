@@ -1,3 +1,10 @@
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Channel;
+import com.google.api.services.youtube.model.ChannelListResponse;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -8,6 +15,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -15,10 +23,16 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class HololiveTools extends ListenerAdapter {
+    final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
+        public void initialize(HttpRequest request) throws IOException {
+        }
+    };
+    YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
     ArrayList<String> schedule = new ArrayList<String>();
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
             "PLT", "IST", "BST", "VST", "CTT", "JST", "ACT", "AET", "SST", "NST", "MIT", "HST", "AST", "PST",
@@ -28,17 +42,41 @@ public class HololiveTools extends ListenerAdapter {
     HashMap<String, String> memberIDMap = memberChannelID();
 
     public HashMap<String, String> memberChannelID(){
+
         String delimiter = ":";
         HashMap<String, String> map = new HashMap<>();
-        try(Stream<String> lines = Files.lines(Paths.get("holoCli\\text\\memberID.txt"))){
+        try(Stream<String> lines = Files.lines(Paths.get("memberID.txt"))){
             lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedtring(line.split(delimiter)[0]), line.split(delimiter)[1]));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return map;
     }
+    public int getSubcount(String id){
+        try {
+            BigInteger subs;
+
+            YouTube.Channels.List search = youTube.channels().list("statistics");
+            search.setId(id);
+            search.setKey(apiKey);
+            ChannelListResponse response = search.execute();
+            List<Channel> channels = response.getItems();
+            for (Channel channel : channels) {
+                subs = channel.getStatistics().getSubscriberCount();
+                return subs.intValue();
+            }
+        }catch(Exception e){
+
+        }
+        return 0;
+
+    }
     public String getSchedule(String timezone, int index) {
-        String s = schedule.get(index);
+        String info[] = getInfo(index,timezone);
+        String name = info[1].replaceAll("\\s+","") + " " +info[2]
+                .replaceAll("\\s+","");
+        String s = schedule.get(index) + "      " + getSubcount(memberIDMap.get(name)) + " subscribers" ;
+
         if (!validTimezone(timezone)) {
             return "Sorry that's not a supported timezone";
         }
@@ -442,22 +480,22 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Moona", "Moona Hoshinova");
             index = index.replaceAll("Iofi", "Airani Iofifteen");
             index = index.replaceAll("Ina", "Ninomae Ina'nis");
-            index = index.replaceAll("holostars", "Holostars Ch");
+            index = index.replaceAll("holostars", "Holostars Ch.");
             index = index.replaceAll("AZKi", "AZKi Music");
-            index = index.replaceAll("Rikka", "Rikka Ch");
-            index = index.replaceAll("Arurandeisu", "Arurandeisu Ch");
+            index = index.replaceAll("Rikka", "Rikka Ch.");
+            index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
             index = index.replaceAll("Ollie", "Kureiji Ollie");
             index = index.replaceAll("Anya", "Anya Melfissa");
             index = index.replaceAll("Reine", "Pavolia Reine");
-            index = index.replaceAll("holoID", "HololiveID Ch");
+            index = index.replaceAll("holoID", "HololiveID Ch.");
             index = index.replaceAll("Calli", "Mori Calliope");
             index = index.replaceAll("Kiara", "Takanashi Kiara");
             index = index.replaceAll("Gura", "Gawr Gura");
             index = index.replaceAll("Amelia", "Amelia Watson");
-            index = index.replaceAll("holoEN", "HololiveEN Ch");
-            index = index.replaceAll("Roboco-san", "Roboco Ch");
+            index = index.replaceAll("holoEN", "HololiveEN Ch.");
+            index = index.replaceAll("Roboco-san", "Roboco Ch.");
             index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
-            index = index.replaceAll("hololive", "Hololive Ch");
+            index = index.replaceAll("hololive", "Hololive Ch.");
             index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
             index = index.replaceAll("~", "");
             return index;
