@@ -15,15 +15,15 @@ public class Main extends ListenerAdapter {
     public static JDABuilder jdabuilder = JDABuilder.createDefault("NDI1ODgxOTE5NzAwMzM2NjQy.WrHncg.EwP_DlU_iRqciL4Kn9kn9ytytUI").addEventListeners(new Main());
     public static JDA jda;
     public static void main(String args[]) {
-
         BotTool bottool = new BotTool();
         hololive.buildScheduleLinux();
+        hololive.fillMemberList();
+        hololive.fillSubCountList();
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,22 +37,16 @@ public class Main extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.startsWith("!hlsearch")){
 
-            String s = msg.replaceAll("!hlsearch","");
-             s.replaceAll("\\s+", "");
+        if (msg.equals("!rescrape")) {
+            e.getChannel().sendMessage("Rescraping Schedule and Sub Counts").queue();
 
-        }
 
-        if (msg.equals("!sourcecode")) {
-            e.getChannel().sendMessage("Source Code [Python and Java IDE needed]: https://drive.google.com/drive/folders/1vX1MTgExX7NerD9CvtsfgxScnayKwXWZ?usp=sharing").queue();
         }
     }
-
     public void logCommand(MessageReceivedEvent e, String message) {
         System.out.println(returnTimestamp() + " " + e.getAuthor() + " requested " + message);
     }
-
     public static String returnTimestamp() {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";

@@ -12,12 +12,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -25,13 +24,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class HololiveTools extends ListenerAdapter {
     final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    final String yagooChannelID = "UCu2DMOGLeR_DSStCyeQpi5Q";
+    ArrayList<String> memberList = new ArrayList<String>();
     HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
         public void initialize(HttpRequest request) throws IOException {
         }
     };
+    ArrayList<String> subcountList = new ArrayList<>();
+
     YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
     ArrayList<String> schedule = new ArrayList<String>();
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
@@ -41,21 +48,76 @@ public class HololiveTools extends ListenerAdapter {
     String[] enMembers = {"Gawr Gura", "Amelia Watson", "Ninomae Ina'nis", "Takanashi Kiara", "Mori Calliope"};
     HashMap<String, String> memberIDMap = memberChannelID();
 
+    public void fillMemberList(){
+        Scanner s = null;
+        try {
+            s = new Scanner(new File("memberList.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (s.hasNext()){
+
+            memberList.add(s.nextLine());
+        }
+        s.close();
+    }
+
+    public Message returnSubRankings(){
+
+        Collections.sort(subcountList, new NumericalStringComparator());
+        String rankings  = "";
+        int ranking  = 1;
+        for (int i = subcountList.size()-1;i>-1;i--){
+            String[] parts = subcountList.get(i).split(":");
+            String subcount = parts[0];
+            String name = parts[1];
+            if(ranking<10){
+                rankings = rankings+ ranking+".   "+name+":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount))+"\n";
+
+            }
+            else{
+                rankings = rankings+ ranking+".  "+name+":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount))+"\n";
+
+            }
+
+            ranking++;
+        }
+        MessageBuilder messageBuilder =new MessageBuilder().append("Hololive Members Ranked by Subscribers ```"+rankings+"```");
+        return messageBuilder.build();
+    }
+
     public HashMap<String, String> memberChannelID(){
 
         String delimiter = ":";
         HashMap<String, String> map = new HashMap<>();
         try(Stream<String> lines = Files.lines(Paths.get("memberID.txt"))){
-            lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedtring(line.split(delimiter)[0]), line.split(delimiter)[1]));
+            lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedString(line.split(delimiter)[0]), line.split(delimiter)[1]));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return map;
     }
+    public void fillSubCountList(){
+        try {
+            System.out.println("Building the subscriber rankings");
+            for (int i = 0;i<memberList.size();i++){
+                String html = Jsoup.connect("https://trackholo.live/en/member/?name="+getTrackHoloString(memberList.get(i))).get().html();
+                Document document = Jsoup.parseBodyFragment(html);
+                Element body = document.body();
+                Elements paragraphs = body.getElementsByTag("h6");
+                Element info = paragraphs.get(0);
+                subcountList.add(info.text().replaceAll(",","")+":"+getFixedString(memberList.get(i)));
+            }
+            subcountList.add(getSubcount(yagooChannelID)+":"+"tanigox (YAGOO)");
+            System.out.println("Finished building the subscriber rankings");
+
+        } catch (IOException ex) {
+            System.out.println("Error Getting Subcount");
+        }
+    }
     public int getSubcount(String id){
         try {
             BigInteger subs;
-
             YouTube.Channels.List search = youTube.channels().list("statistics");
             search.setId(id);
             search.setKey(apiKey);
@@ -115,8 +177,6 @@ public class HololiveTools extends ListenerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         try {
 
             try (BufferedReader br = new BufferedReader(new FileReader("holoCli/hololive.txt"))) {
@@ -140,6 +200,8 @@ public class HololiveTools extends ListenerAdapter {
 
         try {
             Process p = builder.start();
+            p.waitFor();
+            System.out.println("Done Building Schedule");
             try (BufferedReader br = new BufferedReader(new FileReader("holoCli/hololive.txt"))) {
                 String line = null;
                 while ((line = br.readLine()) != null) {
@@ -460,6 +522,7 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Ollie", "Kureiji Ollie");
             index = index.replaceAll("Anya", "Anya Melfissa");
             index = index.replaceAll("Reine", "Pavolia Reine");
+            index = index.replaceAll("Sishiro Botan","Shishiro Botan");
             index = index.replaceAll("holoID", "HololiveID Ch.");
             index = index.replaceAll("Calli", "Mori Calliope");
             index = index.replaceAll("Kiara", "Takanashi Kiara");
@@ -475,19 +538,21 @@ public class HololiveTools extends ListenerAdapter {
             schedule.set(i, index);
         }
     }
-    public String getFixedtring(String index) {
+    public String getFixedString(String index) {
             index = index.replaceAll("Risu", "Ayunda Risu");
             index = index.replaceAll("Moona", "Moona Hoshinova");
             index = index.replaceAll("Iofi", "Airani Iofifteen");
             index = index.replaceAll("Ina", "Ninomae Ina'nis");
             index = index.replaceAll("holostars", "Holostars Ch.");
             index = index.replaceAll("AZKi", "AZKi Music");
+        index = index.replaceAll("Sishiro Botan","Shishiro Botan");
             index = index.replaceAll("Rikka", "Rikka Ch.");
             index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
             index = index.replaceAll("Ollie", "Kureiji Ollie");
             index = index.replaceAll("Anya", "Anya Melfissa");
             index = index.replaceAll("Reine", "Pavolia Reine");
             index = index.replaceAll("holoID", "HololiveID Ch.");
+        index = index.replaceAll("AkiRose","Aki Rosenthal");
             index = index.replaceAll("Calli", "Mori Calliope");
             index = index.replaceAll("Kiara", "Takanashi Kiara");
             index = index.replaceAll("Gura", "Gawr Gura");
@@ -499,6 +564,36 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
             index = index.replaceAll("~", "");
             return index;
+
+    }
+    public String getTrackHoloString(String index) {
+        index = index.replaceAll("Risu", "Ayunda Risu");
+        index = index.replaceAll("Moona", "Moona Hoshinova");
+        index = index.replaceAll("Iofi", "Airani Iofifteen");
+        index = index.replaceAll("Ina", "ninomaeinanis");
+        index = index.replaceAll("holostars", "Holostars Ch.");
+        index = index.replaceAll("AZKi", "azki");
+        index = index.replaceAll("Rikka", "Rikka Ch.");
+        index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
+        index = index.replaceAll("Ollie", "Kureiji Ollie");
+        index = index.replaceAll("Anya", "Anya Melfissa");
+        index = index.replaceAll("Reine", "Pavolia Reine");
+        index = index.replaceAll("holoID", "HololiveID Ch.");
+        index = index.replaceAll("Calli", "Mori Calliope");
+        index = index.replaceAll("Kiara", "Takanashi Kiara");
+        index = index.replaceAll("Gura", "Gawr Gura");
+        index = index.replaceAll("Amelia", "watsonamelia");
+        index = index.replaceAll("holoEN", "HololiveEN Ch.");
+        index = index.replaceAll("Sishiro Botan","shishirobotan");
+        index = index.replaceAll("Roboco-san", "robocosan");
+        index = index.replaceAll("Aki Rose","akirosenthal");
+        index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
+        index = index.replaceAll("hololive", "Hololive Ch.");
+        index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
+        index = index.replaceAll("~", "");
+        index = index.replaceAll("\\s+", "");
+        index = index.toLowerCase();
+        return index;
 
     }
 
@@ -519,7 +614,6 @@ public class HololiveTools extends ListenerAdapter {
             if (arr[i].equalsIgnoreCase(s)) {
                 return true;
             }
-
         }
         return false;
 
@@ -531,8 +625,15 @@ public class HololiveTools extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
+        if(msg.startsWith("!hlranking")){
+
+            e.getChannel().sendMessage("Scraping the ranking page. Thank you for your patience").queue();
+            subcountList.removeAll(subcountList);
+            fillSubCountList();
+            e.getChannel().sendMessage(returnSubRankings()).queue();
+        }
         if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
-            System.out.println(Collections.singletonList(memberIDMap)); // method 2
+
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
 
             try{
@@ -583,7 +684,9 @@ public class HololiveTools extends ListenerAdapter {
 
 
 
-        else if (msg.startsWith("!hl") &&!msg.contains("!hlsearch")&& !msg.contains("!hololive all") && !msg.contains("!hl all") && !msg.contains("!hl upcoming") && !msg.contains("!hololive upcoming")) {
+        else if (msg.startsWith("!hl") &&!msg.contains("!hlsearch")&& !msg.contains("!hololive all") &&
+                !msg.contains("!hl all") && !msg.contains("!hl upcoming") &&
+                !msg.contains("!hololive upcoming")&&!msg.startsWith("!hlranking")) {
             msg = msg.replaceAll("!hololive", "");
             msg = msg.replaceAll("!hl", "");
             Scanner parser = new Scanner(msg);
