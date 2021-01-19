@@ -1,3 +1,5 @@
+import audio.Music;
+import hololive.HololiveTools;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,6 +24,7 @@ public class Main extends ListenerAdapter {
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
+            jdabuilder.addEventListeners(new Music());
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 

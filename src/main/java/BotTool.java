@@ -5,11 +5,13 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class BotTool extends ListenerAdapter{
 
@@ -62,6 +64,7 @@ public class BotTool extends ListenerAdapter{
                     .addField("!hl [index] [timezone]", "Show more info about a stream after \ngetting the index from !hl all [timezone]", true)
                     .addField("!hl upcoming", "an informative error should show up, and this view will remain as-is until all issues are fixed", false)
                     .addField("!holoen [timezone]", "Shows recent streams for only Hololive English members", true)
+                    .addField("!hlranking", "Ranks Hololive members by subscribers", false)
                     .build());
             e.getChannel().sendMessage(helpMessage.build()).queue();
 
