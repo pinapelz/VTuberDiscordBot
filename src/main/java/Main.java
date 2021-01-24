@@ -16,15 +16,16 @@ public class Main extends ListenerAdapter {
     static HololiveTools hololive = new HololiveTools();
     public static JDABuilder jdabuilder = JDABuilder.createDefault("NDI1ODgxOTE5NzAwMzM2NjQy.WrHncg.EwP_DlU_iRqciL4Kn9kn9ytytUI").addEventListeners(new Main());
     public static JDA jda;
+    public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
-        BotTool bottool = new BotTool();
+
         hololive.buildScheduleLinux();
         hololive.fillMemberList();
         hololive.fillSubCountList();
         try {
-            jdabuilder.addEventListeners(bottool);
-            jdabuilder.addEventListeners(hololive);
-            jdabuilder.addEventListeners(new Music());
+           jdabuilder.addEventListeners(bottool);
+           jdabuilder.addEventListeners(hololive);
+          jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 
@@ -40,12 +41,6 @@ public class Main extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-
-        if (msg.equals("!rescrape")) {
-            e.getChannel().sendMessage("Rescraping Schedule and Sub Counts").queue();
-
-
-        }
     }
     public void logCommand(MessageReceivedEvent e, String message) {
         System.out.println(returnTimestamp() + " " + e.getAuthor() + " requested " + message);
@@ -54,6 +49,7 @@ public class Main extends ListenerAdapter {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";
     }
+
 
 
 }

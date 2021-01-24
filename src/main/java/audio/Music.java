@@ -1,4 +1,10 @@
 package audio;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.gson.Gson;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -7,25 +13,41 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.JDA;
+
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
+import java.io.*;
+
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+
 
 public class Music  extends ListenerAdapter {
     ArrayList<String> hololiveMusicURL = new ArrayList<String>();
+    final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
+        public void initialize(HttpRequest request) throws IOException {
+        }
+    };
+    YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
-
-   public Music() {
+    JDA jda;
+   public Music(JDA jda) {
         this.musicManagers = new HashMap<>();
+        this.jda = jda;
         this.playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
@@ -61,14 +83,26 @@ public class Music  extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
+        Message message = event.getMessage();
         GuildMusicManager mng = getGuildAudioPlayer(guild);
         AudioPlayer player = mng.player;
         TrackScheduler scheduler = mng.scheduler;
+        String rawMessage = message.getContentDisplay();
         String[] command = event.getMessage().getContentRaw().split(" ", 2);
 
         if ("!play".equals(command[0]) && command.length == 2) {
-            loadAndPlay(event.getChannel(), command[1],true);
+                loadAndPlay(event.getChannel(), command[1],true);
         }
+        if (rawMessage.contains("!splay")) {
+            String searchString = rawMessage.replaceAll("!splay","");
+            try {
+                event.getChannel().sendMessage("Found Video: " +  returnTopVideoURL(searchString)).queue();
+                loadAndPlay(event.getChannel(), returnTopVideoURL(searchString),true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         else if ("!leave".equals(command[0]))
         {
             guild.getAudioManager().setSendingHandler(null);
@@ -195,6 +229,10 @@ public class Music  extends ListenerAdapter {
             scheduler.shuffle();
             event.getChannel().sendMessage("The queue has been shuffled!").queue();
         }
+        else if("!holoadd".equals(command[0])){
+            addHoloSong(command[1]);
+            event.getChannel().sendMessage("The url has been successfully added to the database").queue();
+        }
 
         super.onGuildMessageReceived(event);
     }
@@ -207,6 +245,7 @@ public class Music  extends ListenerAdapter {
             public void trackLoaded(AudioTrack track) {
                 if(returnMessage) {
                     channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
+
                 }
 
                 play(channel.getGuild(), musicManager, track);
@@ -246,6 +285,8 @@ public class Music  extends ListenerAdapter {
        //Reference MP3 Here in the Future?
         connectToFirstVoiceChannel(guild.getAudioManager());
         musicManager.scheduler.queue(track);
+        BlockingQueue<AudioTrack> s = musicManager.scheduler.queue;
+
     }
 
     private void skipTrack(TextChannel channel) {
@@ -274,6 +315,42 @@ public class Music  extends ListenerAdapter {
         else
             return String.format("%02d:%02d", minutes, seconds);
     }
+    private String returnTopVideoURL(String keyword) throws IOException {
+        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q="+keyword+"&type=video&key="+apiKey;
+        String data = Jsoup.connect(url).ignoreContentType(true).execute().body();
+        JSONObject obj = new JSONObject(data);
+        JSONArray arr = obj.getJSONArray("items");
+        String videoID = "";
+        for (int i = 0; i < arr.length(); i++)
+        {
+           videoID = arr.getJSONObject(i).getJSONObject("id").getString("videoId");
+            System.out.println("Parsed ID "+ videoID);
+        }
+        return "https://www.youtube.com/watch?v="+videoID;
+    }
+
+    private static void addHoloSong(String url){
+        Writer output;
+        try {
+            output = new BufferedWriter(new FileWriter("holoCli/hololiveMusic.txt",true));
+            output.append(url);
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
+
+}
+class VideoData {
+
+    private String title;
+    private  String videoID;
+
+    @Override
+    public String toString() {
+        return "VideoData{" + "title=" + title + ", videoID=" + videoID + '}';
+    }
 }

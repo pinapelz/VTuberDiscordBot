@@ -43,6 +43,7 @@ public class HololiveTools extends ListenerAdapter {
     ArrayList<String> subcountList = new ArrayList<>();
 
     YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
+
     ArrayList<String> schedule = new ArrayList<String>();
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
             "PLT", "IST", "BST", "VST", "CTT", "JST", "ACT", "AET", "SST", "NST", "MIT", "HST", "AST", "PST",

@@ -1,17 +1,20 @@
+
+import com.darkprograms.speech.translator.GoogleTranslate;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
 import java.awt.*;
+import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 public class BotTool extends ListenerAdapter{
 
@@ -45,7 +48,7 @@ public class BotTool extends ListenerAdapter{
             }
         }
 
-        if(msg.equals("!maintenance on")){
+        else if(msg.equals("!maintenance on")){
             boolean allowChange= checkAdmin(e);
             if (allowChange) {
                 e.getChannel().sendMessage("The Bot is now in Maintenance Mode").queue();
@@ -54,7 +57,7 @@ public class BotTool extends ListenerAdapter{
                 e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
             }
         }
-        if(msg.equals("!help")){
+        else if(msg.equals("!help")){
             MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
                     .setTitle("Holobot !help available commands", "https://github.com/pinapelz/holoDiscord")
                     .setDescription("A list of available commands v.1.5.25b")
@@ -68,6 +71,16 @@ public class BotTool extends ListenerAdapter{
                     .build());
             e.getChannel().sendMessage(helpMessage.build()).queue();
 
+        }
+        else if(msg.startsWith("!jptoen")){
+            String translateText = msg.replaceAll("!jptoen","");
+            try {
+                System.out.println("Requested translations for: " + translateText + " by " + e.getAuthor());
+                String translation = GoogleTranslate.translate("ja","en", translateText);
+                e.getChannel().sendMessage(translation).queue();
+            } catch (Exception ex) {
+
+            }
         }
 
 
