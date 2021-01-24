@@ -8,12 +8,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
 import java.awt.*;
-import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BotTool extends ListenerAdapter{
@@ -60,17 +56,32 @@ public class BotTool extends ListenerAdapter{
         else if(msg.equals("!help")){
             MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
                     .setTitle("Holobot !help available commands", "https://github.com/pinapelz/holoDiscord")
-                    .setDescription("A list of available commands v.1.5.25b")
+                    .setDescription("A list of available commands v.1.8b")
                     .setColor(new Color(8877218))
-                    .setTimestamp(OffsetDateTime.parse("2021-01-05T22:18:31.856Z"))
                     .addField("!hl all [timezone]", "Shows the recent streams of \nHolostars and Hololive members", true)
                     .addField("!hl [index] [timezone]", "Show more info about a stream after \ngetting the index from !hl all [timezone]", true)
-                    .addField("!hl upcoming", "an informative error should show up, and this view will remain as-is until all issues are fixed", false)
+                    .addField("!hl upcoming", "Shows upcoming Hololive and Holostars Streams", false)
                     .addField("!holoen [timezone]", "Shows recent streams for only Hololive English members", true)
                     .addField("!hlranking", "Ranks Hololive members by subscribers", false)
+                    .addField("!musichelp", "Music Bot Commmands", false)
                     .build());
             e.getChannel().sendMessage(helpMessage.build()).queue();
 
+        }
+        else if(msg.equals("!musichelp")||msg.equals("!mhelp")){
+            MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
+                    .setTitle("Holobot available music commands", "https://github.com/pinapelz/holoDiscord")
+                    .setDescription("A list of available commands v.1.8b")
+                    .setColor(new Color(8877218))
+                    .addField("!play [url]", "Plays song from YouTube URL", true)
+                    .addField("!splay [keywords]", "Searches for keywords on YouTube and plays top search result", true)
+                    .addField("!pause", "Pause/Resume the music", true)
+                    .addField("!stop", "Stops the music bot an clears the queue", true)
+                    .addField("!leave", "Leaves the voice channel", false)
+                    .addField("!list", "Lists the songs in the queue", false)
+                    .addField("!nowplaying", "Shows the current song playing", false)
+                    .build());
+            e.getChannel().sendMessage(helpMessage.build()).queue();
         }
         else if(msg.startsWith("!jptoen")){
             String translateText = msg.replaceAll("!jptoen","");

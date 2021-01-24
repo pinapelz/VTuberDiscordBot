@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +16,7 @@ public class Main extends ListenerAdapter {
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static LocalDateTime now = LocalDateTime.now();
     static HololiveTools hololive = new HololiveTools();
-    public static JDABuilder jdabuilder = JDABuilder.createDefault("NDI1ODgxOTE5NzAwMzM2NjQy.WrHncg.EwP_DlU_iRqciL4Kn9kn9ytytUI").addEventListeners(new Main());
+    public static JDABuilder jdabuilder = JDABuilder.createDefault(getKey()).addEventListeners(new Main());
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
@@ -50,7 +52,19 @@ public class Main extends ListenerAdapter {
         return "[" + dtf.format(now) + "]";
     }
 
+    public static String getKey(){
+        try (BufferedReader br = new BufferedReader(new FileReader("discordToken.txt"))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                return line;
 
+            }
+        }
+        catch(Exception e){
+
+        }
+        return "ERROR";
+    }
 
 }
 

@@ -33,7 +33,7 @@ import org.jsoup.select.Elements;
 import utilities.NumericalStringComparator;
 
 public class HololiveTools extends ListenerAdapter {
-    final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    final String apiKey = getKey();
     final String yagooChannelID = "UCu2DMOGLeR_DSStCyeQpi5Q";
     ArrayList<String> memberList = new ArrayList<String>();
     HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
@@ -65,7 +65,19 @@ public class HololiveTools extends ListenerAdapter {
         }
         s.close();
     }
+    public String getKey(){
+        try (BufferedReader br = new BufferedReader(new FileReader("apikey.txt"))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                return line;
 
+            }
+        }
+        catch(Exception e){
+
+        }
+        return "ERROR";
+    }
     public Message returnSubRankings(){
 
         Collections.sort(subcountList, new NumericalStringComparator());
