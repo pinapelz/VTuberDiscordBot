@@ -26,7 +26,7 @@ class MyClient(discord.Client):
         await asyncio.sleep(5)
         while not self.is_closed():
             if FLAGFORINDIVIDUALCHANNEL == 0:
-                for chan in range (0, 4):
+                for chan in range (0, 5):
                     if chan == 0:
                         channel = self.get_channel(CHANNELJP)
                         ID = HOLOIDS
@@ -39,6 +39,9 @@ class MyClient(discord.Client):
                     elif chan == 3:
                         channel = self.get_channel(CHANNELID)
                         ID = HOLOidIDS
+                    elif chan == 4:
+                        channel = self.get_channel(CHANNELOT)
+                        ID = INDEPENDENT
                     await postMessageInChannel(channel, ID)
             elif FLAGFORINDIVIDUALCHANNEL == 1:
                 channel = self.get_channel(BOTCHANNEL)
