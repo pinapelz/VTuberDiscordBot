@@ -114,7 +114,6 @@ public class BotTool extends ListenerAdapter{
         return "[" + dtf.format(now) + "]";
     }
     public boolean checkAdmin(MessageReceivedEvent e){
-        boolean allowChange = false;
         Role admin = e.getGuild().getRoleById("794482971830648843");
         for (int i = 0; i < e.getMember().getRoles().size(); i++) {
             if (e.getMember().getRoles().get(i).equals(admin)) {
