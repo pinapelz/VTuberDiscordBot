@@ -156,7 +156,7 @@ public class Music  extends ListenerAdapter {
                 }
             }
         }
-        else if("!holomusic".startsWith(command[0])){
+        else if(command[0].equals("!holomusic")){
             fillHololiveMusic();
             Collections.shuffle(hololiveMusicURL);
             int songsToQueue = Integer.parseInt(command[1]);
@@ -333,7 +333,7 @@ public class Music  extends ListenerAdapter {
         Writer output;
         try {
             output = new BufferedWriter(new FileWriter("holoCli/hololiveMusic.txt",true));
-            output.append(url);
+            output.append("\n"+url);
             output.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -343,14 +343,4 @@ public class Music  extends ListenerAdapter {
 
 
 
-}
-class VideoData {
-
-    private String title;
-    private  String videoID;
-
-    @Override
-    public String toString() {
-        return "VideoData{" + "title=" + title + ", videoID=" + videoID + '}';
-    }
 }

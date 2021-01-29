@@ -53,6 +53,16 @@ public class BotTool extends ListenerAdapter{
                 e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
             }
         }
+        else if(msg.startsWith("!announce")){
+            String sendText = msg.replaceAll("!announce","");
+            boolean allowChange= checkAdmin(e);
+            if (allowChange) {
+                e.getChannel().sendMessage(sendText).queue();
+                jda.shutdown();
+            } else {
+                e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
+            }
+        }
         else if(msg.equals("!help")){
             MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
                     .setTitle("Holobot !help available commands", "https://github.com/pinapelz/holoDiscord")

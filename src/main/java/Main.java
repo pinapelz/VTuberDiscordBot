@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import utilities.ReactRoles;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,6 +28,7 @@ public class Main extends ListenerAdapter {
         try {
            jdabuilder.addEventListeners(bottool);
            jdabuilder.addEventListeners(hololive);
+           jdabuilder.addEventListeners(new ReactRoles());
           jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
