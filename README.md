@@ -1,5 +1,5 @@
 # Hololive Discord Bot
-JDA Discord Bot Written in Java to get the schedules of Hololive and Holostars members. ARM chip deployment is compatible.
+JDA Discord Bot Written in Java to get the schedules of Hololive and Holostars members. ARM compatible, to an extent.
 
 ## Requirements 
 - Java Maven
