@@ -17,3 +17,5 @@ This project is formatted for Intellij IDEA
 You may now run through the IDE or package and run as a shaded JAR file.
 
 For more infomation view wiki.
+
+*OnionBot is technically a second bot but it is there to provide for notifications when someone is live. It is fully optional to run
