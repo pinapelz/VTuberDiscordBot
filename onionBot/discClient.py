@@ -23,10 +23,13 @@ class MyClient(discord.Client):
 
     async def background_query(self):
         await self.wait_until_ready()
+        print("Waiting")
         await asyncio.sleep(5)
+        print("Done Waiting")
         while not self.is_closed():
             if FLAGFORINDIVIDUALCHANNEL == 0:
                 for chan in range (0, 5):
+                    #print("Index " + chan)
                     if chan == 0:
                         channel = self.get_channel(CHANNELJP)
                         ID = HOLOIDS
@@ -40,8 +43,8 @@ class MyClient(discord.Client):
                         channel = self.get_channel(CHANNELID)
                         ID = HOLOidIDS
                     elif chan == 4:
-                        channel = self.get_channel(CHANNELOT)
-                        ID = INDEPENDENT
+                        channel = self.get_channel(CHANNELNIJI)
+                        ID = NIJISANJI
                     await postMessageInChannel(channel, ID)
             elif FLAGFORINDIVIDUALCHANNEL == 1:
                 channel = self.get_channel(BOTCHANNEL)
