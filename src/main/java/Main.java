@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import nijisanji.NijisanjiTools;
 import utilities.ReactRoles;
 
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ public class Main extends ListenerAdapter {
     private static LocalDateTime now = LocalDateTime.now();
     static HololiveTools hololive = new HololiveTools();
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getKey()).addEventListeners(new Main());
+    public static NijisanjiTools nijiTools = new NijisanjiTools();
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
@@ -25,11 +27,12 @@ public class Main extends ListenerAdapter {
         hololive.buildScheduleLinux();
         hololive.fillMemberList();
         hololive.fillSubCountList();
+        //    nijiTools.buildNijisanjiSchedule();
         try {
-           jdabuilder.addEventListeners(bottool);
-           jdabuilder.addEventListeners(hololive);
-           jdabuilder.addEventListeners(new ReactRoles());
-          jdabuilder.addEventListeners(new Music(jda));
+            jdabuilder.addEventListeners(bottool);
+            jdabuilder.addEventListeners(hololive);
+            jdabuilder.addEventListeners(new ReactRoles());
+            //     jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 

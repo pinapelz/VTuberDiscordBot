@@ -36,7 +36,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class Music  extends ListenerAdapter {
     ArrayList<String> hololiveMusicURL = new ArrayList<String>();
-    final String apiKey = "AIzaSyBGi44EH2qpW7_8ENH6RB32r1HyZLpe_7k";
+    final String apiKey = "YOURAPIKEY";
     HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
         public void initialize(HttpRequest request) throws IOException {
         }
