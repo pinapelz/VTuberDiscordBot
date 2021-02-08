@@ -4,7 +4,6 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.gson.Gson;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -36,7 +35,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class Music  extends ListenerAdapter {
     ArrayList<String> hololiveMusicURL = new ArrayList<String>();
-    final String apiKey = "YOURAPIKEY";
+    final String apiKey = "YOUR API KEY";
     HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
         public void initialize(HttpRequest request) throws IOException {
         }

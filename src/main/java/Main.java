@@ -27,12 +27,13 @@ public class Main extends ListenerAdapter {
         hololive.buildScheduleLinux();
         hololive.fillMemberList();
         hololive.fillSubCountList();
-        //    nijiTools.buildNijisanjiSchedule();
+        nijiTools.buildNijisanjiSchedule();
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
+            jdabuilder.addEventListeners(nijiTools);
             jdabuilder.addEventListeners(new ReactRoles());
-            //     jdabuilder.addEventListeners(new Music(jda));
+            jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 

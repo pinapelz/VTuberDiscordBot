@@ -35,12 +35,6 @@ public class ScreenShotTool {
     public void capture(String site) throws IOException {
         driver.get(site);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException ex) {
-            System.out.println("An Error has occured while waiting for the Nijisanji Site to Load");
-        }
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         FileUtils.copyFile(scrFile, new File("nijisanji.png"));
         System.out.println("Took Screenshot for " + site + " and saved as " + "nijisanji.png");
