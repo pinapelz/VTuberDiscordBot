@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # vTuberDiscordBot (Previously hololiveDiscordBot)
+=======
+# vTuberDiscordBot (Previously Hololive Discord Bot)
+>>>>>>> 9bc8aeb8b98ed19470903d090ee372e3761d0f48
 JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
 Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji JP personalities
 
