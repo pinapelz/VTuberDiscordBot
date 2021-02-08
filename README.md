@@ -1,5 +1,6 @@
-# Hololive Discord Bot
-JDA Discord Bot Written in Java to get the schedules of Hololive and Holostars members. ARM compatible, to an extent.
+# vTuber Discord Bot (Previously Hololive Discord Bot)
+JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
+Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji JP personalities
 
 ## Requirements 
 - Java Maven
