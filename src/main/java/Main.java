@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class Main extends ListenerAdapter {
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static LocalDateTime now = LocalDateTime.now();
-    static HololiveTools hololive = new HololiveTools();
+    static HololiveTools hololive = new HololiveTools(getYoutubeKey());
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
     public static NijisanjiTools nijiTools = new NijisanjiTools(getManualUpdateSetting(),getChromeDriverPath());
     public static JDA jda;
@@ -71,9 +71,11 @@ public class Main extends ListenerAdapter {
     }
 
     public static String getYoutubeKey(){
+
         try (BufferedReader br = new BufferedReader(new FileReader("settings/youtubeApiKey.txt"))) {
             String line = null;
             while ((line = br.readLine()) != null) {
+                System.out.println("Read API Key as " + line);
                 return line;
 
             }

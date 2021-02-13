@@ -33,7 +33,7 @@ import org.jsoup.select.Elements;
 import utilities.NumericalStringComparator;
 
 public class HololiveTools extends ListenerAdapter {
-    final String apiKey = getKey();
+    String apiKey = "";
     final String yagooChannelID = "UCu2DMOGLeR_DSStCyeQpi5Q";
     ArrayList<String> memberList = new ArrayList<String>();
     HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
@@ -51,7 +51,9 @@ public class HololiveTools extends ListenerAdapter {
     String DATE_FORMAT = "HH::MM";
     String[] enMembers = {"Gawr Gura", "Amelia Watson", "Ninomae Ina'nis", "Takanashi Kiara", "Mori Calliope"};
     HashMap<String, String> memberIDMap = memberChannelID();
-
+    public HololiveTools(String apiKey){
+        this.apiKey = apiKey;
+    }
     public void fillMemberList(){
         Scanner s = null;
         try {
@@ -65,19 +67,7 @@ public class HololiveTools extends ListenerAdapter {
         }
         s.close();
     }
-    public String getKey(){
-        try (BufferedReader br = new BufferedReader(new FileReader("youtubeApikey.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                return line;
 
-            }
-        }
-        catch(Exception e){
-
-        }
-        return "ERROR";
-    }
     public Message returnSubRankings(){
 
         Collections.sort(subcountList, new NumericalStringComparator());
@@ -112,15 +102,6 @@ public class HololiveTools extends ListenerAdapter {
             e.printStackTrace();
         }
         return map;
-    }
-    public void fillSubCountListPaid() {
-        ArrayList<String> members = fillMemberArrayList();
-        for(int i =0;i<members.size();i++){
-            String[] parts = members.get(i).split(":");
-            String name = parts[0];
-            String url = parts[1];
-            subcountList.add(getSubcount(url)+":"+getFixedString(name));
-        }
     }
 
 public ArrayList<String> fillMemberArrayList(){
@@ -183,7 +164,7 @@ public ArrayList<String> fillMemberArrayList(){
         String info[] = getInfo(index,timezone);
         String name = info[1].replaceAll("\\s+","") + " " +info[2]
                 .replaceAll("\\s+","");
-        String s = schedule.get(index) + "      " + getSubcount(memberIDMap.get(name)) + " subscribers" ;
+        String s = schedule.get(index) ;
 
         if (!validTimezone(timezone)) {
             return "Sorry that's not a supported timezone";
@@ -677,13 +658,7 @@ public ArrayList<String> fillMemberArrayList(){
             fillSubCountList();
             e.getChannel().sendMessage(returnSubRankings()).queue();
         }
-        if(msg.startsWith("!testcommand")){
 
-            e.getChannel().sendMessage("Scraping the ranking page. Thank you for your patience").queue();
-            subcountList.removeAll(subcountList);
-            fillSubCountListPaid();
-            e.getChannel().sendMessage(returnSubRankings()).queue();
-        }
         if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
 
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
