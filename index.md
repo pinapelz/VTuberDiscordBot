@@ -1,6 +1,8 @@
+<html>
 <head>
 <meta name="google-site-verification" content="_8j-Yknfj6qiVQ8uGR6xYRhoUkkwFat7eBIVWQ5Dy0M" />
 </head>
+</html>
 
 # VTuber Discord Bot (Hololive and Nijisanji)
 JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
