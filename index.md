@@ -1,37 +1,42 @@
-## Welcome to GitHub Pages
+# vTuber Discord Bot 
+JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
+Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji JP personalities
 
-You can use the [editor on GitHub](https://github.com/pinapelz/vTuberDiscordBot/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+There is a second bot included (onionBot) based off of [HoloBot](https://github.com/Lukeisun/HoloBot) that 
+both refreshes the Nijisanji Schedule and also displays a feed of who is currently streaming. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+It is highly reccomended to run this bot along side the main bot since it is necessary for automated updating of the schedule.
+It can be ran with no feed by changing the ChannelIDs under config.py to "0"
 
-### Markdown
+Should you wish to not run the bot then the Nijisanji schedule will be updated manually each time the command is ran (please activate this by changing the
+value in autoRefreshNiji.txt to false). **You may encounter slow response speeds when running Nijisanji schedule command with this method**
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Requirements 
+- Java Maven
+- Python 3.6
+- Youtube Data API V3 Key
+- [Chrome Driver Executable](https://chromedriver.chromium.org/downloads)
+All dependencies should already be included in the pom.xml file 
 
-```markdown
-Syntax highlighted code block
+## Building from source
+This project is formatted for Intellij IDEA 
+1. Download Source
+2. Place files in a folder and open using Intellij
+3. Fill in Youtube Data API Key in apikey.txt
+4. Open Discord Bot Token in discordToken.txt
+5. Download chromedriver executable and save it anywhere you'd like   
+6. Configure onionBot by editing config.py with the channel ids you want the feeds to be sent to and the Discord bot token
 
-# Header 1
-## Header 2
-### Header 3
+## Features
+- Music Bot (Large Hololive Playlist), vTuber Schedule
 
-- Bulleted
-- List
+![Schedule](https://i.imgur.com/OpbhYNR.png)
+![Schedule2](https://i.imgur.com/pMCfmSm.png)
+![bot3](https://i.imgur.com/d5Jd6Hq.png)
+![bot4](https://i.imgur.com/m1lFJWd.png)
 
-1. Numbered
-2. List
+You may now run through the IDE or package and run as a shaded JAR file.
+For now please input your chromedriver path manually under ScreenShotTool.java class
+For more infomation view wiki.
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/pinapelz/vTuberDiscordBot/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
