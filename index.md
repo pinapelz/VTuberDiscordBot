@@ -1,4 +1,4 @@
-# vTuber Discord Bot 
+# VTuber Discord Bot (Hololive and Nijisanji)
 JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
 Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji JP personalities
 
