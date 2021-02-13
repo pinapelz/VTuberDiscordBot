@@ -33,6 +33,7 @@ This project is formatted for Intellij IDEA
 ![Schedule](https://i.imgur.com/OpbhYNR.png)
 ![Schedule2](https://i.imgur.com/pMCfmSm.png)
 ![bot3](https://i.imgur.com/d5Jd6Hq.png)
+![bot4](https://i.imgur.com/m1lFJWd.png)
 
 You may now run through the IDE or package and run as a shaded JAR file.
 For now please input your chromedriver path manually under ScreenShotTool.java class
