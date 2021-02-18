@@ -1,5 +1,6 @@
 import audio.Music;
 import hololive.HololiveTools;
+import hololive.KusoNihongoConverter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,6 +21,7 @@ public class Main extends ListenerAdapter {
     static HololiveTools hololive = new HololiveTools(getYoutubeKey());
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
     public static NijisanjiTools nijiTools = new NijisanjiTools(getManualUpdateSetting(),getChromeDriverPath());
+    public static KusoNihongoConverter kusoNihongo = new KusoNihongoConverter();
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
@@ -31,6 +33,7 @@ public class Main extends ListenerAdapter {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
             jdabuilder.addEventListeners(nijiTools);
+            jdabuilder.addEventListeners(kusoNihongo);
             jdabuilder.addEventListeners(new ReactRoles());
             jdabuilder.addEventListeners(new Music(jda,getYoutubeKey()));
             jda = jdabuilder.build();

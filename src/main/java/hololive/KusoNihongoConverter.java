@@ -30,7 +30,7 @@ public class KusoNihongoConverter extends ListenerAdapter {
 
         String delimiter = ",";
         HashMap<String, String> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get(""))) {
+        try (Stream<String> lines = Files.lines(Paths.get("kusoDictionary.txt"))) {
             lines.filter(line -> line.contains(delimiter)).forEach(line ->
                     map.putIfAbsent(line.split(delimiter)[0], line.split(delimiter)[1]));
         } catch (IOException e) {
