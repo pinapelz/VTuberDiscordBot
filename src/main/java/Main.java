@@ -20,19 +20,19 @@ public class Main extends ListenerAdapter {
     private static LocalDateTime now = LocalDateTime.now();
     static HololiveTools hololive = new HololiveTools(getYoutubeKey());
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
-    public static NijisanjiTools nijiTools = new NijisanjiTools(getManualUpdateSetting(),getChromeDriverPath());
+    //public static NijisanjiTools nijiTools = new NijisanjiTools(getManualUpdateSetting(),getChromeDriverPath());
     public static KusoNihongoConverter kusoNihongo = new KusoNihongoConverter();
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
 
-        hololive.buildScheduleLinux();
+        hololive.buildSchedule();
         hololive.fillMemberList();
         hololive.fillSubCountList();
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
-            jdabuilder.addEventListeners(nijiTools);
+            //jdabuilder.addEventListeners(nijiTools);
             jdabuilder.addEventListeners(kusoNihongo);
             jdabuilder.addEventListeners(new ReactRoles());
             jdabuilder.addEventListeners(new Music(jda,getYoutubeKey()));

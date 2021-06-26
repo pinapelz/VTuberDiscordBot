@@ -27,7 +27,7 @@ public class NijisanjiTools extends ListenerAdapter{
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.equals("!refreshnijischedulewhileimbot")){
+        if(msg.equals("!nijirefresh")){
                 ssTool.buildNijisanjiSchedule();
 
         }

@@ -104,23 +104,23 @@ public class HololiveTools extends ListenerAdapter {
         return map;
     }
 
-public ArrayList<String> fillMemberArrayList(){
-    ArrayList<String> listOfLines = new ArrayList<>();
-    try {
-        BufferedReader bufReader = new BufferedReader(new FileReader("memberID.txt"));
+    public ArrayList<String> fillMemberArrayList(){
+        ArrayList<String> listOfLines = new ArrayList<>();
+        try {
+            BufferedReader bufReader = new BufferedReader(new FileReader("memberID.txt"));
 
-        String line = bufReader.readLine();
-        while (line != null) {
-            listOfLines.add(line);
-            line = bufReader.readLine();
+            String line = bufReader.readLine();
+            while (line != null) {
+                listOfLines.add(line);
+                line = bufReader.readLine();
+            }
+            bufReader.close();
         }
-        bufReader.close();
-    }
-    catch(Exception e){
+        catch(Exception e){
 
+        }
+        return listOfLines;
     }
-    return listOfLines;
-}
 
 
 
@@ -244,7 +244,7 @@ public ArrayList<String> fillMemberArrayList(){
     public ArrayList<Message> getUpcomingStreams(String timezone) {
 
         try {
-            buildScheduleLinux();
+            buildSchedule();
         } catch (Exception ex) {
             System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
         }
@@ -322,7 +322,7 @@ public ArrayList<String> fillMemberArrayList(){
 
     public ArrayList<Message> holoENSchedule(String timezone) {
         try {
-            buildScheduleLinux();
+            buildSchedule();
         } catch (Exception ex) {
             System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
         }
@@ -345,10 +345,10 @@ public ArrayList<String> fillMemberArrayList(){
         }
 
         String[] info = new String[5];
-            for (int i = 1; i < schedule.size(); i++) {
-                    info = getInfo(i, timezone);
-                    String fullName = info[1]+" "+info[2];
-                if (arrayContainsString(enMembers,fullName)){
+        for (int i = 1; i < schedule.size(); i++) {
+            info = getInfo(i, timezone);
+            String fullName = info[1]+" "+info[2];
+            if (arrayContainsString(enMembers,fullName)){
                 if (info[4].equals("passed")) {
                     embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
                 } else {
@@ -357,19 +357,19 @@ public ArrayList<String> fillMemberArrayList(){
                 }
             }
 
-            }
-            MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                    .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
-            messages.add(messageBuilder.build());
-            return messages;
         }
+        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
+                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
+                .setEmbed(embed.build());
+        messages.add(messageBuilder.build());
+        return messages;
+    }
 
 
 
     public ArrayList<Message> getAllSchedule(String timezone) {
         try {
-            buildScheduleLinux();
+            buildSchedule();
         } catch (Exception ex) {
             System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
         }
@@ -565,31 +565,31 @@ public ArrayList<String> fillMemberArrayList(){
         }
     }
     public String getFixedString(String index) {
-            index = index.replaceAll("Risu", "Ayunda Risu");
-            index = index.replaceAll("Moona", "Moona Hoshinova");
-            index = index.replaceAll("Iofi", "Airani Iofifteen");
-            index = index.replaceAll("Ina", "Ninomae Ina'nis");
-            index = index.replaceAll("holostars", "Holostars Ch.");
-            index = index.replaceAll("AZKi", "AZKi Music");
+        index = index.replaceAll("Risu", "Ayunda Risu");
+        index = index.replaceAll("Moona", "Moona Hoshinova");
+        index = index.replaceAll("Iofi", "Airani Iofifteen");
+        index = index.replaceAll("Ina", "Ninomae Ina'nis");
+        index = index.replaceAll("holostars", "Holostars Ch.");
+        index = index.replaceAll("AZKi", "AZKi Music");
         index = index.replaceAll("Sishiro Botan","Shishiro Botan");
-            index = index.replaceAll("Rikka", "Rikka Ch.");
-            index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
-            index = index.replaceAll("Ollie", "Kureiji Ollie");
-            index = index.replaceAll("Anya", "Anya Melfissa");
-            index = index.replaceAll("Reine", "Pavolia Reine");
-            index = index.replaceAll("holoID", "HololiveID Ch.");
+        index = index.replaceAll("Rikka", "Rikka Ch.");
+        index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
+        index = index.replaceAll("Ollie", "Kureiji Ollie");
+        index = index.replaceAll("Anya", "Anya Melfissa");
+        index = index.replaceAll("Reine", "Pavolia Reine");
+        index = index.replaceAll("holoID", "HololiveID Ch.");
         index = index.replaceAll("AkiRose","Aki Rosenthal");
-            index = index.replaceAll("Calli", "Mori Calliope");
-            index = index.replaceAll("Kiara", "Takanashi Kiara");
-            index = index.replaceAll("Gura", "Gawr Gura");
-            index = index.replaceAll("Amelia", "Amelia Watson");
-            index = index.replaceAll("holoEN", "HololiveEN Ch.");
-            index = index.replaceAll("Roboco-san", "Roboco Ch.");
-            index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
-            index = index.replaceAll("hololive", "Hololive Ch.");
-            index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
-            index = index.replaceAll("~", "");
-            return index;
+        index = index.replaceAll("Calli", "Mori Calliope");
+        index = index.replaceAll("Kiara", "Takanashi Kiara");
+        index = index.replaceAll("Gura", "Gawr Gura");
+        index = index.replaceAll("Amelia", "Amelia Watson");
+        index = index.replaceAll("holoEN", "HololiveEN Ch.");
+        index = index.replaceAll("Roboco-san", "Roboco Ch.");
+        index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
+        index = index.replaceAll("hololive", "Hololive Ch.");
+        index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
+        index = index.replaceAll("~", "");
+        return index;
 
     }
     public String getTrackHoloString(String index) {
@@ -664,7 +664,7 @@ public ArrayList<String> fillMemberArrayList(){
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
 
             try{
-                buildScheduleLinux();
+                buildSchedule();
             }
             catch(Exception ex){
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
@@ -681,7 +681,7 @@ public ArrayList<String> fillMemberArrayList(){
             ArrayList<Message> messages = new ArrayList<Message>();
             messages = holoENSchedule(timezone);
             e.getChannel().sendMessage(messages.get(0)).queue();
-            buildScheduleLinux();
+            buildSchedule();
         }
 
         if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
@@ -730,7 +730,7 @@ public ArrayList<String> fillMemberArrayList(){
             logCommand(e, "hololive schedule index " + index + " in " + timezone);
             e.getChannel().sendMessage(getSchedule(timezone, index)).queue();
             try{
-                buildScheduleLinux();
+                buildSchedule();
             }
             catch(Exception ex){
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
@@ -757,7 +757,7 @@ public ArrayList<String> fillMemberArrayList(){
             ArrayList<Message> messages = new ArrayList<Message>();
             logCommand(e, "full hololive schedule " + msg);
             try{
-                buildScheduleLinux();
+                buildSchedule();
             }
             catch(Exception ex){
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
@@ -773,7 +773,7 @@ public ArrayList<String> fillMemberArrayList(){
         if (msg.equals("!hololive refresh") || msg.equals("!hl refresh")) {
             e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             try{
-                buildScheduleLinux();
+                buildSchedule();
             }
             catch(Exception ex){
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
