@@ -28,30 +28,22 @@ class MyClient(discord.Client):
         print("Done Waiting")
         while not self.is_closed():
             if FLAGFORINDIVIDUALCHANNEL == 0:
-                for chan in range (0, 5):
+                for chan in range (0, 2):
                     #print("Index " + chan)
                     if chan == 0:
                         channel = self.get_channel(CHANNELJP)
                         ID = HOLOIDS
+                        await postMessageInChannel(channel, ID)
                     elif chan == 1:
-                        channel = self.get_channel(CHANNELEN)
-                        ID = HOLOENIDS
-                    elif chan == 2:
-                        channel = self.get_channel(CHANNELST)
-                        ID = HOLOSTARSIDS
-                    elif chan == 3:
-                        channel = self.get_channel(CHANNELID)
-                        ID = HOLOidIDS
-                    elif chan == 4:
-                        channel = self.get_channel(CHANNELNIJI)
+                        channel = self.get_channel(CHANNELNIJI)                        
                         ID = NIJISANJI
-                    await postMessageInChannel(channel, ID)
+                        await postMessageInChannel(channel, ID)
+                
             elif FLAGFORINDIVIDUALCHANNEL == 1:
                 channel = self.get_channel(BOTCHANNEL)
                 ID = ALLHOLOIDS
                 await postMessageInChannel(channel, ID)
             await asyncio.sleep(300)
-            await channel.send("!refreshnijischedulewhileimbot");
 
 
 client = MyClient()

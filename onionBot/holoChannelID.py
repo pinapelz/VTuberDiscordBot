@@ -43,9 +43,6 @@ HOLOidIDS = [
     ["UCOyYb1c43VlX9rc_lT6NKQw", "Ayunda Risu"],
     ["UCP0BspO_AMEe3aQqqpo89Dg", "Moona Hoshinova"],
     ["UCAoy6rzhSf4ydcYjJw3WoVg", "Iofi Iofifteen"],
-    ["UC727SQYUvx5pDDGQpTICNWg", "Anya Melfissa"],
-    ["UChgTyjG-pdNvxxhdsXfHQ5Q","Pavolia Reine"],
-    ["UCYz_5n-uDuChHtLo7My1HnQ", "Kureji Ollie"]
 ]
 HOLOSTARSIDS = [
     ["UCKeAhJvy8zgXWbh9duVjIaQ", "Aruran"],
