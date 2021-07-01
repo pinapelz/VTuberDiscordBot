@@ -1,12 +1,4 @@
 package hololive;
-
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelListResponse;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -15,7 +7,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.awt.*;
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
@@ -24,79 +15,52 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Stream;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import utilities.NumericalStringComparator;
+import utilities.*;
 
 public class HololiveTools extends ListenerAdapter {
-    String apiKey = "";
-    final String yagooChannelID = "UCu2DMOGLeR_DSStCyeQpi5Q";
     ArrayList<String> memberList = new ArrayList<String>();
-    HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
-        public void initialize(HttpRequest request) throws IOException {
-        }
-    };
     ArrayList<String> subcountList = new ArrayList<>();
-
-    YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
-
     ArrayList<String> schedule = new ArrayList<String>();
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
             "PLT", "IST", "BST", "VST", "CTT", "JST", "ACT", "AET", "SST", "NST", "MIT", "HST", "AST", "PST",
             "PNT", "MST", "CST", "EST", "IET", "PRT", "CNT", "AGT", "BET", "CAT"};
     String DATE_FORMAT = "HH::MM";
-    String[] enMembers = {"Gawr Gura", "Amelia Watson", "Ninomae Ina'nis", "Takanashi Kiara", "Mori Calliope"};
     HashMap<String, String> memberIDMap = memberChannelID();
-    public HololiveTools(String apiKey){
-        this.apiKey = apiKey;
-    }
-    public void fillMemberList(){
-        Scanner s = null;
-        try {
-            s = new Scanner(new File("memberList.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        while (s.hasNext()){
 
-            memberList.add(s.nextLine());
-        }
-        s.close();
-    }
-
-    public Message returnSubRankings(){
+    public Message returnSubRankings() {
 
         Collections.sort(subcountList, new NumericalStringComparator());
-        String rankings  = "";
-        int ranking  = 1;
-        for (int i = subcountList.size()-1;i>-1;i--){
+        String rankings = "";
+        int ranking = 1;
+        for (int i = subcountList.size() - 1; i > -1; i--) {
             String[] parts = subcountList.get(i).split(":");
             String subcount = parts[0];
             String name = parts[1];
-            if(ranking<10){
-                rankings = rankings+ ranking+".   "+name+":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount))+"\n";
+            if (ranking < 10) {
+                rankings = rankings + ranking + ".   " + name + ":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount)) + "\n";
 
-            }
-            else{
-                rankings = rankings+ ranking+".  "+name+":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount))+"\n";
+            } else {
+                rankings = rankings + ranking + ".  " + name + ":  " + NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(subcount)) + "\n";
 
             }
 
             ranking++;
         }
-        MessageBuilder messageBuilder =new MessageBuilder().append("Hololive Members Ranked by Subscribers ```"+rankings+"```");
+        MessageBuilder messageBuilder = new MessageBuilder().append("Hololive Members Ranked by Subscribers ```" + rankings + "```");
         return messageBuilder.build();
     }
 
-    public HashMap<String, String> memberChannelID(){
+    public HashMap<String, String> memberChannelID() {
 
         String delimiter = ":";
         HashMap<String, String> map = new HashMap<>();
-        try(Stream<String> lines = Files.lines(Paths.get("memberID.txt"))){
+        try (Stream<String> lines = Files.lines(Paths.get("memberID.txt"))) {
             lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedString(line.split(delimiter)[0]), line.split(delimiter)[1]));
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,67 +68,31 @@ public class HololiveTools extends ListenerAdapter {
         return map;
     }
 
-    public ArrayList<String> fillMemberArrayList(){
-        ArrayList<String> listOfLines = new ArrayList<>();
-        try {
-            BufferedReader bufReader = new BufferedReader(new FileReader("memberID.txt"));
 
-            String line = bufReader.readLine();
-            while (line != null) {
-                listOfLines.add(line);
-                line = bufReader.readLine();
-            }
-            bufReader.close();
-        }
-        catch(Exception e){
-
-        }
-        return listOfLines;
-    }
-
-
-
-    public void fillSubCountList(){
+    public void fillSubCountList() {
         try {
             System.out.println("Building the subscriber rankings");
-            for (int i = 0;i<memberList.size();i++){
-                String html = Jsoup.connect("https://trackholo.live/en/member/?name="+getTrackHoloString(memberList.get(i))).get().html();
+            for (int i = 0; i < memberList.size(); i++) {
+                String html = Jsoup.connect("https://trackholo.live/en/member/?name=" + getTrackHoloString(memberList.get(i))).get().html();
                 Document document = Jsoup.parseBodyFragment(html);
                 Element body = document.body();
                 Elements paragraphs = body.getElementsByTag("h6");
                 Element info = paragraphs.get(0);
-                subcountList.add(info.text().replaceAll(",","")+":"+getFixedString(memberList.get(i)));
+                subcountList.add(info.text().replaceAll(",", "") + ":" + getFixedString(memberList.get(i)));
             }
-            subcountList.add(getSubcount(yagooChannelID)+":"+"tanigox (YAGOO)");
+
             System.out.println("Finished building the subscriber rankings");
 
         } catch (IOException ex) {
-            System.out.println("Error Getting Subcount");
+            System.out.println("Error Reading Subcount from trackholo");
         }
     }
-    public int getSubcount(String id){
-        try {
-            BigInteger subs;
-            YouTube.Channels.List search = youTube.channels().list("statistics");
-            search.setId(id);
-            search.setKey(apiKey);
-            ChannelListResponse response = search.execute();
-            List<Channel> channels = response.getItems();
-            for (Channel channel : channels) {
-                subs = channel.getStatistics().getSubscriberCount();
-                return subs.intValue();
-            }
-        }catch(Exception e){
 
-        }
-        return 0;
-
-    }
     public String getSchedule(String timezone, int index) {
-        String info[] = getInfo(index,timezone);
-        String name = info[1].replaceAll("\\s+","") + " " +info[2]
-                .replaceAll("\\s+","");
-        String s = schedule.get(index) ;
+        String info[] = getInfo(index, timezone);
+        String name = info[1].replaceAll("\\s+", "") + " " + info[2]
+                .replaceAll("\\s+", "");
+        String s = schedule.get(index);
 
         if (!validTimezone(timezone)) {
             return "Sorry that's not a supported timezone";
@@ -244,7 +172,7 @@ public class HololiveTools extends ListenerAdapter {
     public ArrayList<Message> getUpcomingStreams(String timezone) {
 
         try {
-            buildSchedule();
+            buildScheduleLinux();
         } catch (Exception ex) {
             System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
         }
@@ -260,7 +188,7 @@ public class HololiveTools extends ListenerAdapter {
             embed.addField("An Error has occured", "Sorry this is not a valid timezone", false);
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
             return messages;
         }
@@ -280,7 +208,7 @@ public class HololiveTools extends ListenerAdapter {
             }
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
             EmbedBuilder embed2 = new EmbedBuilder().setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png").setColor(new Color(3725533));
@@ -298,7 +226,7 @@ public class HololiveTools extends ListenerAdapter {
                 }
             }
             MessageBuilder messageBuilder2 = (MessageBuilder) new MessageBuilder()
-                    .setEmbed(embed2.build());
+                    .setEmbeds(embed2.build());
             messages.add(messageBuilder2.build());
 
         } else {
@@ -314,62 +242,15 @@ public class HololiveTools extends ListenerAdapter {
             }
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
         }
         return messages;
     }
-
-    public ArrayList<Message> holoENSchedule(String timezone) {
-        try {
-            buildSchedule();
-        } catch (Exception ex) {
-            System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-        }
-        ArrayList<Message> messages = new ArrayList<Message>();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-        LocalDateTime now = LocalDateTime.now();
-        EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1").setColor(new Color(3725533))
-                .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png")
-                .setDescription("For more info about each stream use \n!hololive *[index number]* or !hl *[index number]*");
-
-        if (!validTimezone(timezone)) {
-            embed.addField("An Error has occured", "Sorry this is not a valid timezone", false);
-            MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                    .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
-            messages.add(messageBuilder.build());
-            return messages;
-        }
-
-        String[] info = new String[5];
-        for (int i = 1; i < schedule.size(); i++) {
-            info = getInfo(i, timezone);
-            String fullName = info[1]+" "+info[2];
-            if (arrayContainsString(enMembers,fullName)){
-                if (info[4].equals("passed")) {
-                    embed.addField("~~" + i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone + "~~", " ~~ " + info[3] + " ~~ ", false);
-                } else {
-                    embed.addField(i + ". " + info[1] + " " + info[2] + " - " + info[0] + " " + timezone, info[3], false);
-
-                }
-            }
-
-        }
-        MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
-                .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                .setEmbed(embed.build());
-        messages.add(messageBuilder.build());
-        return messages;
-    }
-
-
 
     public ArrayList<Message> getAllSchedule(String timezone) {
         try {
-            buildSchedule();
+            buildScheduleLinux();
         } catch (Exception ex) {
             System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
         }
@@ -385,7 +266,7 @@ public class HololiveTools extends ListenerAdapter {
             embed.addField("An Error has occured", "Sorry this is not a valid timezone", false);
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
             return messages;
         }
@@ -405,7 +286,7 @@ public class HololiveTools extends ListenerAdapter {
             }
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
             EmbedBuilder embed2 = new EmbedBuilder().setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cover_Corp_vertical_logo_1.png/220px-Cover_Corp_vertical_logo_1.png").setColor(new Color(3725533));
@@ -424,7 +305,7 @@ public class HololiveTools extends ListenerAdapter {
                 }
             }
             MessageBuilder messageBuilder2 = (MessageBuilder) new MessageBuilder()
-                    .setEmbed(embed2.build());
+                    .setEmbeds(embed2.build());
             messages.add(messageBuilder2.build());
 
             return messages;
@@ -441,7 +322,7 @@ public class HololiveTools extends ListenerAdapter {
             }
             MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder()
                     .append("**Recent Hololive and Holostars Schedule**\nIf Index is too long first few may become un-crossed out\n Use !hololive upcoming [timezone] to filter already started and finished streams")
-                    .setEmbed(embed.build());
+                    .setEmbeds(embed.build());
             messages.add(messageBuilder.build());
             return messages;
         }
@@ -456,12 +337,10 @@ public class HololiveTools extends ListenerAdapter {
         Scanner parser2 = new Scanner(currentTime);
         String strStreamHour = parser.next();
         int streamHour = Integer.parseInt(strStreamHour);
-        stream = stream.replaceAll(strStreamHour, " ");
         int streamMinutes = Integer.parseInt(parser.next());
 
         String strCurrentHour = parser2.next();
         int currentHour = Integer.parseInt(strCurrentHour);
-        currentTime = currentTime.replaceAll(strCurrentHour, " ");
         int currentMinutes = Integer.parseInt(parser2.next());
         if (currentHour == 0) {
             currentHour = 24;
@@ -548,7 +427,7 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Ollie", "Kureiji Ollie");
             index = index.replaceAll("Anya", "Anya Melfissa");
             index = index.replaceAll("Reine", "Pavolia Reine");
-            index = index.replaceAll("Sishiro Botan","Shishiro Botan");
+            index = index.replaceAll("Sishiro Botan", "Shishiro Botan");
             index = index.replaceAll("holoID", "HololiveID Ch.");
             index = index.replaceAll("Calli", "Mori Calliope");
             index = index.replaceAll("Kiara", "Takanashi Kiara");
@@ -559,11 +438,11 @@ public class HololiveTools extends ListenerAdapter {
             index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
             index = index.replaceAll("hololive", "Hololive Ch.");
             index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
-
             index = index.replaceAll("~", "");
             schedule.set(i, index);
         }
     }
+
     public String getFixedString(String index) {
         index = index.replaceAll("Risu", "Ayunda Risu");
         index = index.replaceAll("Moona", "Moona Hoshinova");
@@ -571,14 +450,14 @@ public class HololiveTools extends ListenerAdapter {
         index = index.replaceAll("Ina", "Ninomae Ina'nis");
         index = index.replaceAll("holostars", "Holostars Ch.");
         index = index.replaceAll("AZKi", "AZKi Music");
-        index = index.replaceAll("Sishiro Botan","Shishiro Botan");
+        index = index.replaceAll("Sishiro Botan", "Shishiro Botan");
         index = index.replaceAll("Rikka", "Rikka Ch.");
         index = index.replaceAll("Arurandeisu", "Arurandeisu Ch.");
         index = index.replaceAll("Ollie", "Kureiji Ollie");
         index = index.replaceAll("Anya", "Anya Melfissa");
         index = index.replaceAll("Reine", "Pavolia Reine");
         index = index.replaceAll("holoID", "HololiveID Ch.");
-        index = index.replaceAll("AkiRose","Aki Rosenthal");
+        index = index.replaceAll("AkiRose", "Aki Rosenthal");
         index = index.replaceAll("Calli", "Mori Calliope");
         index = index.replaceAll("Kiara", "Takanashi Kiara");
         index = index.replaceAll("Gura", "Gawr Gura");
@@ -592,6 +471,7 @@ public class HololiveTools extends ListenerAdapter {
         return index;
 
     }
+
     public String getTrackHoloString(String index) {
         index = index.replaceAll("Risu", "Ayunda Risu");
         index = index.replaceAll("Moona", "Moona Hoshinova");
@@ -610,9 +490,9 @@ public class HololiveTools extends ListenerAdapter {
         index = index.replaceAll("Gura", "Gawr Gura");
         index = index.replaceAll("Amelia", "watsonamelia");
         index = index.replaceAll("holoEN", "HololiveEN Ch.");
-        index = index.replaceAll("Sishiro Botan","shishirobotan");
+        index = index.replaceAll("Sishiro Botan", "shishirobotan");
         index = index.replaceAll("Roboco-san", "robocosan");
-        index = index.replaceAll("Aki Rose","akirosenthal");
+        index = index.replaceAll("Aki Rose", "akirosenthal");
         index = index.replaceAll("Yuzuki Choko Sub", "Yuzuki Choco");
         index = index.replaceAll("hololive", "Hololive Ch.");
         index = index.replaceAll("Hoshimatsi Suisei", "Hoshimachi Suisei");
@@ -635,53 +515,15 @@ public class HololiveTools extends ListenerAdapter {
         return sdf.format(date);
     }
 
-    public boolean arrayContainsString(String[] arr, String s) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i].equalsIgnoreCase(s)) {
-                return true;
-            }
-        }
-        return false;
-
-
-    }
-
     @Override
-    public void onMessageReceived(MessageReceivedEvent e){
+    public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.startsWith("!hlranking")){
-
-            e.getChannel().sendMessage("Scraping the ranking page. Thank you for your patience").queue();
+        if (msg.startsWith("!hlranking")) {
             subcountList.removeAll(subcountList);
             fillSubCountList();
             e.getChannel().sendMessage(returnSubRankings()).queue();
-        }
-
-        if (msg.startsWith("!holoen") || msg.startsWith("!hlen")) {
-
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
-
-            try{
-                buildSchedule();
-            }
-            catch(Exception ex){
-                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-            }
-            msg = msg.replaceAll("!holoen","");
-            msg = msg.replaceAll("!hlen","");
-            msg = msg.replaceAll("\\s+", "");
-            msg = msg.toUpperCase();
-            if (msg.equals("") || msg.equals(null)) {
-                msg = "JST";
-            }
-            String timezone = msg;
-            logCommand(e, "hololive EN schedule");
-            ArrayList<Message> messages = new ArrayList<Message>();
-            messages = holoENSchedule(timezone);
-            e.getChannel().sendMessage(messages.get(0)).queue();
-            buildSchedule();
         }
 
         if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
@@ -699,21 +541,15 @@ public class HololiveTools extends ListenerAdapter {
             if (messages.size() == 2) {
                 e.getChannel().sendMessage(messages.get(0)).queue();
                 e.getChannel().sendMessage(messages.get(1)).queue();
-            }
-            else if(messages.size()==0){
-                logCommand(e,"Error Value Returned");
-            }
-            else {
+            } else if (messages.size() == 0) {
+                logCommand(e, "Error Value Returned");
+            } else {
                 e.getChannel().sendMessage(messages.get(0)).queue();
             }
 
-        }
-
-
-
-        else if (msg.startsWith("!hl") &&!msg.contains("!hlsearch")&& !msg.contains("!hololive all") &&
+        } else if (msg.startsWith("!hl") && !msg.contains("!hlsearch") && !msg.contains("!hololive all") &&
                 !msg.contains("!hl all") && !msg.contains("!hl upcoming") &&
-                !msg.contains("!hololive upcoming")&&!msg.startsWith("!hlranking")) {
+                !msg.contains("!hololive upcoming") && !msg.startsWith("!hlranking")) {
             msg = msg.replaceAll("!hololive", "");
             msg = msg.replaceAll("!hl", "");
             Scanner parser = new Scanner(msg);
@@ -729,19 +565,13 @@ public class HololiveTools extends ListenerAdapter {
             }
             logCommand(e, "hololive schedule index " + index + " in " + timezone);
             e.getChannel().sendMessage(getSchedule(timezone, index)).queue();
-            try{
-                buildSchedule();
-            }
-            catch(Exception ex){
+            try {
+                buildScheduleLinux();
+            } catch (Exception ex) {
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
             }
-        }
-
-
-
-        else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
+        } else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
             System.out.println("Upcoming");
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             msg = msg.replaceAll("!hololive upcoming", "");
             msg = msg.replaceAll("!hl upcoming", "");
             Scanner parser = new Scanner(msg);
@@ -756,10 +586,9 @@ public class HololiveTools extends ListenerAdapter {
             logCommand(e, "hololive upcoming streams " + " in " + timezone);
             ArrayList<Message> messages = new ArrayList<Message>();
             logCommand(e, "full hololive schedule " + msg);
-            try{
-                buildSchedule();
-            }
-            catch(Exception ex){
+            try {
+                buildScheduleLinux();
+            } catch (Exception ex) {
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
             }
             messages = getUpcomingStreams(timezone);
@@ -771,11 +600,9 @@ public class HololiveTools extends ListenerAdapter {
             }
         }
         if (msg.equals("!hololive refresh") || msg.equals("!hl refresh")) {
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
-            try{
-                buildSchedule();
-            }
-            catch(Exception ex){
+            try {
+                buildScheduleLinux();
+            } catch (Exception ex) {
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
             }
             logCommand(e, "manual hololive schedule refresh");
@@ -783,9 +610,11 @@ public class HololiveTools extends ListenerAdapter {
         }
 
     }
+
     public void logCommand(MessageReceivedEvent e, String message) {
         System.out.println(returnTimestamp() + " " + e.getAuthor() + " requested " + message);
     }
+
     public static String returnTimestamp() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();

@@ -1,41 +1,40 @@
-import audio.Music;
+import audio.*;
 import hololive.HololiveTools;
-import hololive.KusoNihongoConverter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nijisanji.NijisanjiTools;
-import utilities.ReactRoles;
+import org.w3c.dom.ls.LSOutput;
+import utilities.*;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 
 public class Main extends ListenerAdapter {
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static LocalDateTime now = LocalDateTime.now();
-    static HololiveTools hololive = new HololiveTools(getYoutubeKey());
+    static HololiveTools hololive = new HololiveTools();
+
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
-    //public static NijisanjiTools nijiTools = new NijisanjiTools(getManualUpdateSetting(),getChromeDriverPath());
-    public static KusoNihongoConverter kusoNihongo = new KusoNihongoConverter();
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
 
-        hololive.buildSchedule();
-        hololive.fillMemberList();
+        hololive.buildScheduleLinux();
         hololive.fillSubCountList();
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
-            //jdabuilder.addEventListeners(nijiTools);
-            jdabuilder.addEventListeners(kusoNihongo);
             jdabuilder.addEventListeners(new ReactRoles());
-            jdabuilder.addEventListeners(new Music(jda,getYoutubeKey()));
+            jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
 
@@ -43,6 +42,16 @@ public class Main extends ListenerAdapter {
             e.printStackTrace();
             System.out.println("Failed to Login");
         }
+      /*  private String[] messages = { "message 1", "message 2" };
+        private int currentIndex = 0;
+        private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+//run this once
+        threadPool.scheduleWithFixedDelay(() -> {
+            jda.getPresence().setActivity(Activity.playing(messages[currentIndex]));
+            currentIndex = (currentIndex + 1) % messages.length;
+        }, 0, 30, TimeUnit.SECONDS);
+//when you want to stop it (e.g. when the bot is stopped)
+        threadPool.shutdown();*/
 
     }
 
@@ -59,63 +68,25 @@ public class Main extends ListenerAdapter {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";
     }
-    public static boolean getManualUpdateSetting(){
-        try (BufferedReader br = new BufferedReader(new FileReader("settings/youtubeApiKey.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                return Boolean.parseBoolean(line);
 
-            }
-        }
-        catch(Exception e){
 
-        }
-        return false;
-    }
-
-    public static String getYoutubeKey(){
-
-        try (BufferedReader br = new BufferedReader(new FileReader("settings/youtubeApiKey.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                System.out.println("Read API Key as " + line);
-                return line;
-
-            }
-        }
-        catch(Exception e){
-
-        }
-        return "ERROR";
-    }
 
     public static String getDiscordKey(){
-        try (BufferedReader br = new BufferedReader(new FileReader("settings/discordToken.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                System.out.println("Logging in as " + line);
-                return line;
+        String readToken = "";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("settings//discordToken.txt"));
+            readToken = br.readLine();
 
-            }
         }
         catch(Exception e){
-
+            System.out.println(readToken);
+            System.out.println("Invalid Token for Bot");
+            System.exit(0);
         }
-        return "ERROR";
+        return readToken;
+
     }
-    public static String getChromeDriverPath(){
-        try (BufferedReader br = new BufferedReader(new FileReader("settings/chromeDriverPath.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                return line;
 
-            }
-        }
-        catch(Exception e){
-
-        }
-        return "ERROR";
-    }
 
 }
 

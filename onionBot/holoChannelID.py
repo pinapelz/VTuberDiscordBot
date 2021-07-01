@@ -31,6 +31,27 @@ HOLOIDS = [
     ["UCAWSyEs_Io8MtpY3m-zqILA", "Momosuzu Nene"],
     ["UCUKD-uaobj9jiqB-VXt71mA", "Shishiro Botan"],
     ["UCK9V2B22uJYu3N7eR_BT9QA", "Omaru Polka"],
+    ["UCL_qhgtOy0dy1Agp8vkySQg", "Mori Calliope"],
+    ["UCHsx4Hqa-1ORjQTh9TYDhww", "Takanashi Kiara"],
+    ["UCMwGHR0BTZuLsmjY_NT5Pwg", "Ninomae Ina'nis"],
+    ["UCoSrY_IQQVpmIRZ9Xf-y93g", "Gawr Gura"],
+    ["UCyl1z3jo3XHR1riLFKG5UAg", "Amelia Watson"],
+        ["UCOyYb1c43VlX9rc_lT6NKQw", "Ayunda Risu"],
+    ["UCP0BspO_AMEe3aQqqpo89Dg", "Moona Hoshinova"],
+    ["UCAoy6rzhSf4ydcYjJw3WoVg", "Iofi Iofifteen"],
+        ["UCKeAhJvy8zgXWbh9duVjIaQ", "Aruran"],
+    ["UC6t3-_N8A6ME1JShZHHqOMw", "Miyabi"],
+    ["UCZgOv3YDEs-ZnZWDYVwJdmA", "Izuru"],
+    ["UCEzsociuFqVwgZuMaZqaCsg", "Kira"],
+    ["UC9mf_ZVpouoILRY9NUIaK-w", "Rikka"],
+    ["UCNVEsYbiZjH5QLmGeSgTSzg", "Leda"],
+    ["UCGNI4MENvnsymYjKiZwv9eg", "Temma"],
+    ["UCANDOlYTJT7N5jlRC3zfzVA", "Roberu"],
+    ["UChSvpZYRPh0FvG4SJGSga3g", "Shien"],
+    ["UCwL7dgTxKo8Y4RFIKWaf8gA", "Aragami Oga"],
+    ["UC727SQYUvx5pDDGQpTICNWg", "Anya Melfissa"],
+    ["UChgTyjG-pdNvxxhdsXfHQ5Q","Pavolia Reine"],
+    ["UCYz_5n-uDuChHtLo7My1HnQ", "Kureji Ollie"]
 ]
 HOLOENIDS = [
     ["UCL_qhgtOy0dy1Agp8vkySQg", "Mori Calliope"],
@@ -161,7 +182,11 @@ NIJISANJI = [
 [ "UCe_p3YEuYJb8Np0Ip9dk-FQ", "Akane Asahina"],
 [ "UCL_O_HXgLJx3Auteer0n0pA", "Sango Suo"],
 [ "UCebT4Aq-3XWb5je1S1FvR_A", "Kohaku Todo"],
-[ "UCRqBKoKuX30ruKAq05pCeRQ", "Hisui Kitakoji"]
+[ "UCRqBKoKuX30ruKAq05pCeRQ", "Hisui Kitakoji"],
+["UCP4nMSTdwU1KqYWu3UH5DHQ","Pomu Rainpuff"],
+["UCu-J8uIXuLZh16gG-cT1naw","Finana Ryugu"],
+["UCIeSUTOTkF9Hs7q3SGcO-Ow","Elira Pendora"]
+
 
 ]
 

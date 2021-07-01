@@ -1,5 +1,21 @@
 package nijisanji;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.DataNode;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -7,141 +23,36 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import utilities.ScreenShotTool;
 
 import java.io.File;
 import java.util.List;
 
-public class NijisanjiTools extends ListenerAdapter{
-
-    boolean updateNijiManual = false;
-    String chromeDriverPath  = "/usr/lib/chromium-browser/chromedriver";
-    public NijisanjiTools(boolean manualUpdate,String chromeDriverPath){
-    this.updateNijiManual = manualUpdate;
-    this.chromeDriverPath = chromeDriverPath;
-    ssTool.buildNijisanjiSchedule();
-    }
-    ScreenShotTool ssTool = new ScreenShotTool(chromeDriverPath);
+public class NijisanjiTools extends ListenerAdapter {
+    static HashMap<String, String> memberIDMap = memberChannelID();
+    static Set<String> keySet = memberIDMap.keySet();
+    static ArrayList<String> listOfKeys = new ArrayList<String>(keySet); //names
+    static Collection<String> values = memberIDMap.values(); //ids
+    static ArrayList<String> listOfValues = new ArrayList<String>(values);
     @Override
-    public void onMessageReceived(MessageReceivedEvent e){
+    public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.equals("!nijirefresh")){
-                ssTool.buildNijisanjiSchedule();
-
+        if(msg.startsWith("!nijischedule")){
+            e.getChannel().sendMessage("Scraping the ranking page. Thank you for your patience").queue();
         }
-        if(msg.equals("!nijischedule")){
-            if(msg.equals("!nijischedule")) {
-                if (updateNijiManual) {
-                    ssTool.buildNijisanjiSchedule();
-                }
-
-            }
-            System.out.println(e.getMember().getUser()+" requested Nijisanji Schedule");
-            EmbedBuilder embed = new EmbedBuilder();
-            File image1 = new File("nijisanji.png");
-            embed.setImage("attachment://nijisanji.png")
-                    .setTitle("Nijisanji Schedule P.1");
-            e.getChannel().sendMessage(embed.build())
-                    .addFile(image1, "nijisanji.png")
-                    .queue(msgg->{
-                        msgg.addReaction("⬅").queue();
-                        msgg.addReaction("➡").queue();
-                        msgg.addReaction("❌").queue();
-                    });
-
-
-
-        }
-
     }
-    void loadNijisanji(int index, GuildMessageReactionAddEvent e){
-        String messageID = e.getMessageId();
-            EmbedBuilder embed = new EmbedBuilder();
-            File image1 = new File("nijisanji.png");
-            File image2 = new File("nijisanji2.png");
-            File image3 = new File("nijisanji3.png");
-            if (index == 1) {
-                embed.setImage("attachment://nijisanji.png")
-                        .setTitle("Nijisanji Schedule P.1");
-                e.getChannel().retrieveMessageById(messageID).complete().delete().queue();
-                e.getChannel().sendMessage(embed.build())
-                        .addFile(image1, "nijisanji.png")
-                        .queue(msgg->{
-                            msgg.addReaction("⬅").queue();
-                            msgg.addReaction("➡").queue();
-                            msgg.addReaction("❌").queue();
-                        });
-
-            }
-            if (index == 2) {
-                embed.setImage("attachment://nijisanji2.png")
-                        .setTitle("Nijisanji Schedule P.2");
-                e.getChannel().retrieveMessageById(messageID).complete().delete().queue();
-                e.getChannel().sendMessage(embed.build())
-                        .addFile(image2, "nijisanji2.png")
-                        .queue(msgg->{
-                            msgg.addReaction("⬅").queue();
-                            msgg.addReaction("➡").queue();
-                            msgg.addReaction("❌").queue();
-                        });
-
-            }
-            if (index == 3) {
-                embed.setImage("attachment://nijisanji3.png")
-                        .setTitle("Nijisanji Schedule P.3");
-                e.getChannel().retrieveMessageById(messageID).complete().delete().queue();
-                e.getChannel().sendMessage(embed.build())
-                        .addFile(image3, "nijisanji3.png")
-                        .queue(msgg->{
-                            msgg.addReaction("⬅").queue();
-                            msgg.addReaction("➡").queue();
-                            msgg.addReaction("❌").queue();
-                        });
-
-            }
+    public static HashMap<String, String> memberChannelID(){
+        String delimiter = ":";
+        HashMap<String, String> map = new HashMap<>();
+        try(Stream<String> lines = Files.lines(Paths.get("nijiMemberID.txt"))){
+            lines.filter(line -> line.contains(delimiter)).forEach(line ->
+                    map.putIfAbsent(line.split(delimiter)[0]
+                    , line.split(delimiter)[1]));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-
-
-    @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent e){
-
-            if(e.getReactionEmote().getName().equals("⬅")&&!e.getMember().getUser().isBot()){
-           Message message =  (Message)e.getChannel().retrieveMessageById(e.getMessageId()).complete();
-           e.getChannel().retrieveMessageById(e.getMessageId()).complete().removeReaction(
-                   "⬅",e.getChannel().retrieveMessageById(e.getMessageId()).complete().getAuthor());
-           List<MessageEmbed> embeds = message.getEmbeds();
-           if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.1")){
-
-           }
-           else if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.2")){
-            loadNijisanji(1,e);
-           }
-           else if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.3")){
-               loadNijisanji(2,e);
-                }
-            }
-            else if(e.getReactionEmote().getName().equals("➡")&&!e.getMember().getUser().isBot()){
-                Message message =  (Message)e.getChannel().retrieveMessageById(e.getMessageId()).complete();
-                List<MessageEmbed> embeds = message.getEmbeds();
-                if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.1")){
-                    loadNijisanji(2,e);
-                }
-                else if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.2")){
-                    loadNijisanji(3,e);
-                }
-                else if(embeds.get(0).getTitle().equals("Nijisanji Schedule P.3")){
-
-                }
-            }
-            else if(e.getReactionEmote().getName().equals("❌")&&!e.getMember().getUser().isBot()){
-               e.getChannel().retrieveMessageById(e.getMessageId()).complete().delete().queue();
-                System.out.println(e.getMember().getUser()+" deleted a Nijisanji Embed");
-            }
-            }
+        return map;
     }
-
-
+}
 

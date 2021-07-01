@@ -1,9 +1,4 @@
 package audio;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.youtube.YouTube;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -20,11 +15,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 
 
 import java.io.*;
@@ -36,15 +28,11 @@ import java.util.concurrent.BlockingQueue;
 public class Music  extends ListenerAdapter {
     ArrayList<String> hololiveMusicURL = new ArrayList<String>();
     String apiKey = "";
-    HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
-        public void initialize(HttpRequest request) throws IOException {
-        }
-    };
-    YouTube youTube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), httpRequestInitializer).setApplicationName("RikoBot").build();
+
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
     JDA jda;
-   public Music(JDA jda, String apiKey) {
+   public Music(JDA jda) {
         this.musicManagers = new HashMap<>();
         this.jda = jda;
         this.apiKey = apiKey;

@@ -4,3 +4,7 @@ finger,yubi yubi
 fuck,FAQ
 love,FAQ
 thanks,arigathanks
+excuse me,sorrymasen
+stop,yametekudastop
+chairman,kaichou
+ha,Ha↗️Ha↘️

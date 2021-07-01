@@ -29,7 +29,7 @@ This project is formatted for Intellij IDEA
 
 
 You may now run through the IDE or package and run as a shaded JAR file.
-For now please input your chromedriver path manually under ScreenShotTool.java class
+
 For more infomation view wiki.
 
 

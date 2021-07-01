@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -66,7 +64,7 @@ public class BotTool extends ListenerAdapter{
             }
         }
         else if(msg.equals("!help")){
-            MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
+            MessageBuilder helpMessage = new MessageBuilder().setEmbeds(new EmbedBuilder()
                     .setTitle("Holobot !help available commands", "https://github.com/pinapelz/holoDiscord")
                     .setDescription("A list of available commands v.1.8b")
                     .setColor(new Color(8877218))
@@ -76,13 +74,12 @@ public class BotTool extends ListenerAdapter{
                     .addField("!holoen [timezone]", "Shows recent streams for only Hololive English members", true)
                     .addField("!hlranking", "Ranks Hololive members by subscribers", false)
                     .addField("!musichelp", "Music Bot Commmands", false)
-                    .addField("!nijischedule","Nijisanji Schedule",false)
                     .build());
             e.getChannel().sendMessage(helpMessage.build()).queue();
 
         }
         else if(msg.equals("!musichelp")||msg.equals("!mhelp")){
-            MessageBuilder helpMessage = new MessageBuilder().setEmbed(new EmbedBuilder()
+            MessageBuilder helpMessage = new MessageBuilder().setEmbeds(new EmbedBuilder()
                     .setTitle("Holobot available music commands", "https://github.com/pinapelz/holoDiscord")
                     .setDescription("A list of available commands v.1.8b")
                     .setColor(new Color(8877218))
@@ -117,26 +114,13 @@ public class BotTool extends ListenerAdapter{
         return "[" + dtf.format(now) + "]";
     }
     public boolean checkAdmin(MessageReceivedEvent e){
-        Role admin = e.getGuild().getRoleById(getAdminRoleID());
+        Role admin = e.getGuild().getRoleById("794482971830648843");
         for (int i = 0; i < e.getMember().getRoles().size(); i++) {
             if (e.getMember().getRoles().get(i).equals(admin)) {
                 return true;
             }
         }
         return false;
-    }
-    public String getAdminRoleID(){
-        try (BufferedReader br = new BufferedReader(new FileReader("settings/adminRole.txt"))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                System.out.println("Read ADMIN ROLE ID " + line);
-                return line;
-            }
-        }
-        catch(Exception e){
-
-        }
-        return "ERROR";
     }
 
 }
