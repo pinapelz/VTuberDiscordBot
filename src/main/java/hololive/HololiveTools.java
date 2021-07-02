@@ -60,7 +60,7 @@ public class HololiveTools extends ListenerAdapter {
 
         String delimiter = ":";
         HashMap<String, String> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get("memberID.txt"))) {
+        try (Stream<String> lines = Files.lines(Paths.get("data//memberID.txt"))) {
             lines.filter(line -> line.contains(delimiter)).forEach(line -> map.putIfAbsent(getFixedString(line.split(delimiter)[0]), line.split(delimiter)[1]));
         } catch (IOException e) {
             e.printStackTrace();

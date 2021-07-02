@@ -39,7 +39,7 @@ public class NijisanjiTools extends ListenerAdapter {
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
         if(msg.startsWith("!nijischedule")){
-            e.getChannel().sendMessage("Scraping the ranking page. Thank you for your patience").queue();
+            e.getChannel().sendMessage("Scraping Niisanji channels. Thank you for your patience").queue();
         }
     }
     public static HashMap<String, String> memberChannelID(){
