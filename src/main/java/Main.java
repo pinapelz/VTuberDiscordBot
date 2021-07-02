@@ -2,6 +2,7 @@ import audio.*;
 import hololive.HololiveTools;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -9,50 +10,66 @@ import nijisanji.NijisanjiTools;
 import org.w3c.dom.ls.LSOutput;
 import utilities.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
-public class Main extends ListenerAdapter {
+public class Main extends ListenerAdapter{
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private static ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
     private static LocalDateTime now = LocalDateTime.now();
     static HololiveTools hololive = new HololiveTools();
-
+    static NijisanjiTools nijisanji = new NijisanjiTools();
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
-
-        hololive.buildScheduleLinux();
-        hololive.fillSubCountList();
+        Runnable scheduleRunner = new Runnable(){
+                    public void run(){
+                        while(true){
+                            try {
+                                System.out.println("Rebuilding Nijisanji and Hololive Schedule");
+                                if(System.getProperty("os.name").toString().contains("Windows")){
+                                    hololive.buildSchedule();
+                                }
+                                else{
+                                    hololive.buildScheduleLinux();
+                                }
+                                TimeUnit.SECONDS.sleep(180);
+                            } catch (InterruptedException e) {
+                                System.out.println("[ERROR]:   Error Building Schedule");
+                            }
+                        }
+                    }
+                };
         try {
+            if(System.getProperty("os.name").toString().contains("Windows")){
+                hololive.buildSchedule();
+            }
+            else{
+                hololive.buildScheduleLinux();
+            }
+            hololive.fillSubCountList();
+            hololive.fillMemberList();
+          //  nijisanji.buildNijiSchedule();
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
+            jdabuilder.addEventListeners(nijisanji);
             jdabuilder.addEventListeners(new ReactRoles());
             jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
-
+            Thread thread = new Thread(scheduleRunner);
+            thread.start();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to Login");
         }
-      /*  private String[] messages = { "message 1", "message 2" };
-        private int currentIndex = 0;
-        private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
-//run this once
-        threadPool.scheduleWithFixedDelay(() -> {
-            jda.getPresence().setActivity(Activity.playing(messages[currentIndex]));
-            currentIndex = (currentIndex + 1) % messages.length;
-        }, 0, 30, TimeUnit.SECONDS);
-//when you want to stop it (e.g. when the bot is stopped)
-        threadPool.shutdown();*/
-
     }
 
     @Override
@@ -86,7 +103,5 @@ public class Main extends ListenerAdapter {
         return readToken;
 
     }
-
-
 }
 

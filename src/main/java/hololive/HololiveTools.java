@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -30,9 +29,19 @@ public class HololiveTools extends ListenerAdapter {
     String[] validTimezones = {"GMT", "UTC", "ECT", "EET", "ART", "EAT", "MET", "NET",
             "PLT", "IST", "BST", "VST", "CTT", "JST", "ACT", "AET", "SST", "NST", "MIT", "HST", "AST", "PST",
             "PNT", "MST", "CST", "EST", "IET", "PRT", "CNT", "AGT", "BET", "CAT"};
-    String DATE_FORMAT = "HH::MM";
-    HashMap<String, String> memberIDMap = memberChannelID();
+    public void fillMemberList(){
+        Scanner s = null;
+        try {
+            s = new Scanner(new File("data//memberList.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (s.hasNext()){
 
+            memberList.add(s.nextLine());
+        }
+        s.close();
+    }
     public Message returnSubRankings() {
 
         Collections.sort(subcountList, new NumericalStringComparator());
@@ -68,7 +77,6 @@ public class HololiveTools extends ListenerAdapter {
         return map;
     }
 
-
     public void fillSubCountList() {
         try {
             System.out.println("Building the subscriber rankings");
@@ -87,6 +95,7 @@ public class HololiveTools extends ListenerAdapter {
             System.out.println("Error Reading Subcount from trackholo");
         }
     }
+
 
     public String getSchedule(String timezone, int index) {
         String info[] = getInfo(index, timezone);
@@ -170,12 +179,7 @@ public class HololiveTools extends ListenerAdapter {
     }
 
     public ArrayList<Message> getUpcomingStreams(String timezone) {
-
-        try {
-            buildScheduleLinux();
-        } catch (Exception ex) {
-            System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-        }
+//previously here
         ArrayList<Message> messages = new ArrayList<Message>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
@@ -249,14 +253,9 @@ public class HololiveTools extends ListenerAdapter {
     }
 
     public ArrayList<Message> getAllSchedule(String timezone) {
-        try {
-            buildScheduleLinux();
-        } catch (Exception ex) {
-            System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-        }
+//prev here
         ArrayList<Message> messages = new ArrayList<Message>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
         LocalDateTime now = LocalDateTime.now();
         EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://static.wikia.nocookie.net/fc620067-166e-48d9-baa7-44abee59e6e1").setColor(new Color(3725533))
                 .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
@@ -527,7 +526,6 @@ public class HololiveTools extends ListenerAdapter {
         }
 
         if (msg.startsWith("!hololive all") || msg.startsWith("!hl all")) {
-            e.getChannel().sendMessage("Scraping the website. Thank you for your patience").queue();
             msg = msg.replaceAll("!hololive all", "");
             msg = msg.replaceAll("!hl all", "");
             msg = msg.replaceAll("\\s+", "");
@@ -565,11 +563,6 @@ public class HololiveTools extends ListenerAdapter {
             }
             logCommand(e, "hololive schedule index " + index + " in " + timezone);
             e.getChannel().sendMessage(getSchedule(timezone, index)).queue();
-            try {
-                buildScheduleLinux();
-            } catch (Exception ex) {
-                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-            }
         } else if (msg.startsWith("!hl upcoming") || msg.startsWith("!hololive upcoming")) {
             System.out.println("Upcoming");
             msg = msg.replaceAll("!hololive upcoming", "");
@@ -586,11 +579,6 @@ public class HololiveTools extends ListenerAdapter {
             logCommand(e, "hololive upcoming streams " + " in " + timezone);
             ArrayList<Message> messages = new ArrayList<Message>();
             logCommand(e, "full hololive schedule " + msg);
-            try {
-                buildScheduleLinux();
-            } catch (Exception ex) {
-                System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
-            }
             messages = getUpcomingStreams(timezone);
             if (messages.size() == 2) {
                 e.getChannel().sendMessage(messages.get(0)).queue();
@@ -601,7 +589,12 @@ public class HololiveTools extends ListenerAdapter {
         }
         if (msg.equals("!hololive refresh") || msg.equals("!hl refresh")) {
             try {
-                buildScheduleLinux();
+                if(System.getProperty("os.name").toString().contains("Windows")){
+                    buildSchedule();
+                }
+                else{
+                    buildScheduleLinux();
+                }
             } catch (Exception ex) {
                 System.out.println("Failed to build schedule. Possible scraper script error or incorrect name formatting");
             }
