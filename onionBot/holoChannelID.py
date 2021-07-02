@@ -183,11 +183,10 @@ NIJISANJI = [
 [ "UCL_O_HXgLJx3Auteer0n0pA", "Sango Suo"],
 [ "UCebT4Aq-3XWb5je1S1FvR_A", "Kohaku Todo"],
 [ "UCRqBKoKuX30ruKAq05pCeRQ", "Hisui Kitakoji"],
-["UCP4nMSTdwU1KqYWu3UH5DHQ","Pomu Rainpuff"],
-["UCu-J8uIXuLZh16gG-cT1naw","Finana Ryugu"],
-["UCIeSUTOTkF9Hs7q3SGcO-Ow","Elira Pendora"]
-
+["UCP4nMSTdwU1KqYWu3UH5DHQ", "Pomu Rainpuff"],
+["UCIeSUTOTkF9Hs7q3SGcO-Ow", "Elira Pendora"],
+["UCu-J8uIXuLZh16gG-cT1naw", "Finana Ryugu"]
 
 ]
 
-ALLHOLOIDS = HOLOIDS + HOLOENIDS + HOLOidIDS + HOLOSTARSIDS 
+ALLHOLOIDS = HOLOIDS + HOLOENIDS + HOLOidIDS + HOLOSTARSIDS
