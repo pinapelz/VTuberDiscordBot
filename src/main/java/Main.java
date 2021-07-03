@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nijisanji.NijisanjiTools;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.ls.LSOutput;
 import utilities.*;
 
@@ -111,18 +114,16 @@ public class Main extends ListenerAdapter{
 
 
     public static String getDiscordKey(){
-        String readToken = "";
+        Object obj = null;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("settings//discordToken.txt"));
-            readToken = br.readLine();
-
+            obj = new JSONParser().parse(new FileReader("settings//config.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        catch(Exception e){
-            System.out.println(readToken);
-            System.out.println("Invalid Token for Bot");
-            System.exit(0);
-        }
-        return readToken;
+        JSONObject jo = (JSONObject) obj;
+        return (String) jo.get("discordToken");
 
     }
 }

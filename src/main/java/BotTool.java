@@ -8,7 +8,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.awt.*;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -114,13 +120,25 @@ public class BotTool extends ListenerAdapter{
         return "[" + dtf.format(now) + "]";
     }
     public boolean checkAdmin(MessageReceivedEvent e){
-        Role admin = e.getGuild().getRoleById("794482971830648843");
+        Role admin = e.getGuild().getRoleById(returnAdminRole());
         for (int i = 0; i < e.getMember().getRoles().size(); i++) {
             if (e.getMember().getRoles().get(i).equals(admin)) {
                 return true;
             }
         }
         return false;
+    }
+    public String returnAdminRole(){
+        Object obj = null;
+        try {
+            obj = new JSONParser().parse(new FileReader("settings//config.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        JSONObject jo = (JSONObject) obj;
+        return (String) jo.get("adminRole");
     }
 
 }

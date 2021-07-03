@@ -39,3 +39,12 @@ target/classes/Main.class
 holoCli/hololive.txt
 data/nijisanji.txt
 target/classes/nijisanji/NijisanjiTools$1.class
+settings/config.json
+.idea/libraries/Maven__com_googlecode_json_simple_json_simple_1_1_1.xml
+.idea/libraries/Maven__junit_junit_4_10.xml
+.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml
+.idea/hololiveDiscordBot.iml
+.idea/libraries/Maven__com_googlecode_json_simple_json_simple_1_1_1.xml
+.idea/libraries/Maven__junit_junit_4_10.xml
+.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml
+.idea/hololiveDiscordBot.iml
