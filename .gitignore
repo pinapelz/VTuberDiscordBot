@@ -36,3 +36,6 @@ target/classes/nijisanji/NijisanjiTools.class
 target/classes/Main.class
 .idea/workspace.xml
 .idea/workspace.xml
+holoCli/hololive.txt
+data/nijisanji.txt
+target/classes/nijisanji/NijisanjiTools$1.class

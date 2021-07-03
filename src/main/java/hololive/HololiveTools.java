@@ -90,7 +90,6 @@ public class HololiveTools extends ListenerAdapter {
             }
 
             System.out.println("Finished building the subscriber rankings");
-
         } catch (IOException ex) {
             System.out.println("Error Reading Subcount from trackholo");
         }
@@ -308,7 +307,9 @@ public class HololiveTools extends ListenerAdapter {
             messages.add(messageBuilder2.build());
 
             return messages;
-        } else {
+        }
+
+        else {
             for (int i = 1; i < schedule.size(); i++) {
                 info = getInfo(i, timezone);
                 if (info[4].equals("passed")) {

@@ -31,19 +31,41 @@ public class Main extends ListenerAdapter{
     public static void main(String args[]) {
         Runnable scheduleRunner = new Runnable(){
                     public void run(){
+                        if(System.getProperty("os.name").toString().contains("Windows")){
+                            hololive.buildSchedule();
+                        }
+                        else{
+                            hololive.buildScheduleLinux();
+                        }
+                        int hololiveRefresh = 0;
+                        int nijisanjiRefresh = 0;
                         while(true){
-                            try {
-                                System.out.println("Rebuilding Nijisanji and Hololive Schedule");
-                                if(System.getProperty("os.name").toString().contains("Windows")){
-                                    hololive.buildSchedule();
+                                if(hololiveRefresh==180){
+                                    System.out.println("Rebuilding Nijisanji and Hololive Schedule");
+                                    if(System.getProperty("os.name").toString().contains("Windows")){
+                                        hololive.buildSchedule();
+                                    }
+                                    else{
+                                        hololive.buildScheduleLinux();
+                                    }
+                                    hololiveRefresh=0;
                                 }
-                                else{
-                                    hololive.buildScheduleLinux();
+                            if(nijisanjiRefresh==600){
+                                try {
+                                    Process proc = Runtime.getRuntime().exec("java -jar external//ScrapeNijisanji.jar");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                TimeUnit.SECONDS.sleep(180);
-                            } catch (InterruptedException e) {
-                                System.out.println("[ERROR]:   Error Building Schedule");
+                                nijisanjiRefresh = 0;
                             }
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                           hololiveRefresh++;
+                            nijisanjiRefresh++;
+
                         }
                     }
                 };
@@ -56,7 +78,7 @@ public class Main extends ListenerAdapter{
             }
             hololive.fillSubCountList();
             hololive.fillMemberList();
-          //  nijisanji.buildNijiSchedule();
+            nijisanji.buildNijiSchedule();
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
             jdabuilder.addEventListeners(nijisanji);
