@@ -80,3 +80,4 @@ target/maven-archiver/pom.properties
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 .idea/hololiveDiscordBot.iml
 .idea/workspace.xml
+settings/config.json
