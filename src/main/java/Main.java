@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nijisanji.NijisanjiTools;
@@ -16,6 +18,7 @@ import utilities.*;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,11 +30,15 @@ public class Main extends ListenerAdapter{
     private static ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
     private static LocalDateTime now = LocalDateTime.now();
     static HololiveTools hololive = new HololiveTools();
+    static ArrayList<Message> hololiveLive = new ArrayList<Message>();
+    static ArrayList<Message> nijisanjiLive = new ArrayList<Message>();
     static NijisanjiTools nijisanji = new NijisanjiTools();
+    static AutoRefreshLive autoRefresh = new AutoRefreshLive();
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
+
         Runnable scheduleRunner = new Runnable(){
                     public void run(){
                         if(System.getProperty("os.name").toString().contains("Windows")){
@@ -55,11 +62,10 @@ public class Main extends ListenerAdapter{
                                 }
                             if(nijisanjiRefresh==600){
                                 try {
-                                    Process proc = Runtime.getRuntime().exec("java -jar external//ScrapeNijisanji.jar");
+                                    autoRefresh.buildNijiSchedule();
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                nijisanjiRefresh = 0;
                             }
                             try {
                                 TimeUnit.SECONDS.sleep(1);
@@ -72,6 +78,7 @@ public class Main extends ListenerAdapter{
                         }
                     }
                 };
+
         try {
             if(System.getProperty("os.name").toString().contains("Windows")){
                 hololive.buildSchedule();
@@ -81,7 +88,7 @@ public class Main extends ListenerAdapter{
             }
             hololive.fillSubCountList();
             hololive.fillMemberList();
-            nijisanji.buildNijiSchedule();
+           nijisanji.buildNijiSchedule();
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(hololive);
             jdabuilder.addEventListeners(nijisanji);
@@ -89,8 +96,10 @@ public class Main extends ListenerAdapter{
             jdabuilder.addEventListeners(new Music(jda));
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
+
             Thread thread = new Thread(scheduleRunner);
             thread.start();
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to Login");

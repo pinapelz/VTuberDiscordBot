@@ -32,7 +32,6 @@ import java.util.List;
 public class NijisanjiTools extends ListenerAdapter {
     static HashMap<String, String> memberIDMap = fillHashMap("data//nijiMemberID.txt");
     static ArrayList<Message> messageQueue = new ArrayList<Message>();
-    private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     static HashMap<String, Integer> schedule = new HashMap<String, Integer>();
     static Set<String> keySet = memberIDMap.keySet();
     static Collection<String> values = memberIDMap.values(); //ids
@@ -45,6 +44,7 @@ public class NijisanjiTools extends ListenerAdapter {
     static ArrayList<String> finalScheduleLine2 = new ArrayList<String>();
     static HashMap<String, Integer> sortedSchedule = new HashMap<String, Integer>();
     static ArrayList<String> individualSchedule = new ArrayList<String>();
+    private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
@@ -176,7 +176,7 @@ public class NijisanjiTools extends ListenerAdapter {
                 if (youtubeVariables.equals(null)) {
                 }
             } catch (Exception e) {
-              //  System.out.println(listOfKeys.get(i)+" doesn't have a stream scheduled");
+
             }
             try {
                 Pattern pattern = Pattern.compile("\"scheduledStartTime\":\"(.*?)\"");
