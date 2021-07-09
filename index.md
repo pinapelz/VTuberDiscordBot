@@ -16,18 +16,13 @@ For more information please visit the Github Page using the button above
 - Java Maven
 - Python 3.6
 - Youtube Data API V3 Key
-- [Chrome Driver Executable](https://chromedriver.chromium.org/downloads)
-- Chrome Web Browser
 All dependencies should already be included in the pom.xml file 
 
 ## Building from source
 This project is formatted for Intellij IDEA 
 1. Download Source
 2. Place files in a folder and open using Intellij
-3. Fill in Youtube Data API Key in apikey.txt
-4. Open Discord Bot Token in discordToken.txt
-5. Download chromedriver executable and save it anywhere you'd like   
-6. Configure onionBot by editing config.py with the channel ids you want the feeds to be sent to and the Discord bot token
+3. Fill in config.json under settings
 
 ## Features
 - Music Bot (Large Hololive Playlist), vTuber Schedule
