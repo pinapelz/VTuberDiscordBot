@@ -8,9 +8,6 @@
 JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
 Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji personalities
 
-There is a second bot included (onionBot) based off of [HoloBot](https://github.com/Lukeisun/HoloBot) that 
-both refreshes the Nijisanji Schedule and also displays a feed of who is currently streaming. 
-
 The two bots have useful features such as telling you when someone has gone live, listing the scheduled streams of talents, and a music bot feature featuring custom made and editable Vtuber music playlist (not restricted to just VTubers).
 
 For more information please visit the Github Page using the button above
@@ -37,6 +34,6 @@ This project is formatted for Intellij IDEA
 
 ![Schedule](https://i.imgur.com/OpbhYNR.png)
 ![Schedule2](https://i.imgur.com/pMCfmSm.png)
-![bot3](https://i.imgur.com/d5Jd6Hq.png)
+![bot3](https://i.imgur.com/0csUW7g.png)
 
 
