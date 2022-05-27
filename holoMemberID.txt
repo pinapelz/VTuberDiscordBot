@@ -42,16 +42,29 @@ UCANDOlYTJT7N5jlRC3zfzVA:Yukoku Roberu
 UChSvpZYRPh0FvG4SJGSga3g:Kageyama Shien
 UCwL7dgTxKo8Y4RFIKWaf8gA:Aragami Oga
 UC0TXe_LYZ4scaW2XMyi5_kw:AZKi
-UCOyYb1c43VlX9rc_lT6NKQw:Risu
-UCP0BspO_AMEe3aQqqpo89Dg:Moona
-UCAoy6rzhSf4ydcYjJw3WoVg:Iofi
-UCYz_5n-uDuChHtLo7My1HnQ:Ollie
-UC727SQYUvx5pDDGQpTICNWg:Anya
-UChgTyjG-pdNvxxhdsXfHQ5Q:Reine
+UCOyYb1c43VlX9rc_lT6NKQw:Ayunda Risu
+UCP0BspO_AMEe3aQqqpo89Dg:Moona Hoshinova
+UCAoy6rzhSf4ydcYjJw3WoVg:Airani Iofi
+UCYz_5n-uDuChHtLo7My1HnQ:Kureji Ollie
+UC727SQYUvx5pDDGQpTICNWg:Anya Melfissa
+UChgTyjG-pdNvxxhdsXfHQ5Q:Pavolia Reine
 UCfrWoRGlawPQDQxxeIDRP0Q:holoID
-UCL_qhgtOy0dy1Agp8vkySQg:Calli
-UCHsx4Hqa-1ORjQTh9TYDhww:Kiara
-UCMwGHR0BTZuLsmjY_NT5Pwg:Ina
-UCoSrY_IQQVpmIRZ9Xf-y93g:Gura
-UCyl1z3jo3XHR1riLFKG5UAg:Amelia
+UCL_qhgtOy0dy1Agp8vkySQg:Mori Calliope
+UCHsx4Hqa-1ORjQTh9TYDhww:Takanashi Kiara
+UCMwGHR0BTZuLsmjY_NT5Pwg:Ninomae Ina'nis
+UCoSrY_IQQVpmIRZ9Xf-y93g:Gawr Gura
+UCyl1z3jo3XHR1riLFKG5UAg:Amelia Watson
 UCotXwY6s8pWmuWd_snKYjhg:holoEN
+UC8rcEBzJSleTkf_-agPM20g:IRyS
+UCO_aKKYxn4tvrqPjcTzZ6EQ:Ceres Fauna
+UCmbs8T6MWqUHP1tIQvSgKrg:Ouro Kronii
+UC3n5uGu18FoCy23ggWWp8tA:Nanashi Mumei
+UCgmPnx-EEeOrZSg5Tiw7ZRQ:Hakos Baelz
+UCsUj0dszADCGbF3gNrQEuSQ:Tsukumo Sana
+UCTvHWSfBZgtxE4sILOaurIQ:Vestia Zeta
+UCjLEmnpCNeisMxy134KPwWw:Kobo Kanaeru
+UCZLZ8Jjx_RN2CXloOmgTHVg:Kaela Kovalskia
+UCc88OV45ICgHbn3ZqLLb52w:Yatogami Fuma
+UCgRqGV1gBf2Esxh0Tz1vxzw:Utsugi Uyu
+UCkT1u65YS49ca_LsFwcTakw:Hizaki Gamma
+UCdfMHxjcCc2HSd9qFvfJgjg:Minase Rio
