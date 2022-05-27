@@ -22,19 +22,18 @@ import org.jsoup.select.Elements;
 
 public class AutoRefreshLive {
 
-    static HashMap<String, String> memberIDMap = fillHashMap("data//nijiMemberID.txt");
-    static Set<String> keySet = memberIDMap.keySet();
-    static Collection<String> values = memberIDMap.values(); //ids
-    static ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
-    static ArrayList<String> listOfValues = new ArrayList<String>(keySet);
 
-    public static void buildNijiSchedule() throws IOException {
-        System.out.println("Building Nijischedule");
-        PrintWriter writer = new PrintWriter("data//nijisanji.txt"); //This needs to be auto
+    public static void buildSchedule(String group,String nickname) throws IOException {
+        HashMap<String, String> memberIDMap = fillHashMap("data//"+nickname+"MemberID.txt");
+        Set<String> keySet = memberIDMap.keySet();
+        Collection<String> values = memberIDMap.values(); //ids
+        ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
+        ArrayList<String> listOfValues = new ArrayList<String>(keySet);
+        PrintWriter writer = new PrintWriter("data//"+group+".txt"); //This needs to be auto
         writer.print("");
         writer.close();
         for (int i = 0; i < listOfValues.size(); i++) {
-
+            System.out.println("Building " + group+ " schedule for " + listOfKeys.get(i) + "  " + (i+1) +" of " + listOfValues.size());
             String unixTime = "0";
             String html = Jsoup.connect("https://www.youtube.com/channel/" + listOfValues.get(i) + "/live").get().html();
             Document doc = Jsoup.parse(html);
@@ -67,7 +66,7 @@ public class AutoRefreshLive {
                 int difference_In_Days = (int) Math.abs(difference_In_Time / (8.64 * Math.pow(10, 7))); //conversion of ms to days
                 if (difference_In_Days < 5 && difference_In_Days >= 0) {
 
-                    Files.write(Paths.get("data//nijisanji.txt"), ("\n" + listOfKeys.get(i) + ":" + unixTime).getBytes(), StandardOpenOption.APPEND);
+                    Files.write(Paths.get("data//"+group+".txt"), ("\n" + listOfKeys.get(i) + ":" + unixTime).getBytes(), StandardOpenOption.APPEND);
                 } else {
                 }
 
@@ -76,9 +75,8 @@ public class AutoRefreshLive {
 
             }
         }
-        removeBlankLines("data//nijisanji.txt");
+        removeBlankLines("data//"+group+".txt");
     }
-
     public static void removeBlankLines(String filename) {
         try {
             List<String> lines = FileUtils.readLines(new File(filename), "UTF-8");

@@ -179,7 +179,7 @@ public class NijisanjiTools extends ListenerAdapter {
     }
     public static HashMap<String, String> fillHashMapFromSite(String fileName){
         try {
-            URL url = new URL("https://pinapelz.github.io/vtuber-data/"+fileName);
+            URL url = new URL("https://pinapelz.github.io/vTuberDiscordBot/"+fileName);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String line;
             FileWriter writer = new FileWriter("data//"+fileName);

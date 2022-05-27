@@ -1,4 +1,5 @@
 import audio.*;
+import hololive.HololiveTools;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -23,9 +24,7 @@ public class Main extends ListenerAdapter{
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
     private static LocalDateTime now = LocalDateTime.now();
-    //static HololiveTools hololive = new HololiveTools();
-    static ArrayList<Message> hololiveLive = new ArrayList<Message>();
-    static ArrayList<Message> nijisanjiLive = new ArrayList<Message>();
+    static HololiveTools hololive = new HololiveTools();
     static NijisanjiTools nijisanji = new NijisanjiTools();
     static AutoRefreshLive autoRefresh = new AutoRefreshLive();
     public static JDABuilder jdabuilder = JDABuilder.createDefault(getDiscordKey()).addEventListeners(new Main());
@@ -33,9 +32,11 @@ public class Main extends ListenerAdapter{
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
         try {
-            //autoRefresh.buildNijiSchedule();
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(nijisanji);
+            jdabuilder.addEventListeners(hololive);
+            autoRefresh.buildSchedule("hololive","holo");
+            autoRefresh.buildSchedule("nijisanji","niji");
             jdabuilder.addEventListeners(new ReactRoles());
             jdabuilder.addEventListeners(new Music(jda));
             Runnable runnable =
@@ -86,7 +87,8 @@ public class Main extends ListenerAdapter{
         while(true){
             try {
                 TimeUnit.MINUTES.sleep(15);
-                autoRefresh.buildNijiSchedule();
+                autoRefresh.buildSchedule("hololive","holo");
+                autoRefresh.buildSchedule("nijisanji","niji");
             } catch (Exception e) {
                 Thread.currentThread().interrupt();
             }
