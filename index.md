@@ -1,22 +1,9 @@
-<html>
-<head>
-<meta name="google-site-verification" content="_8j-Yknfj6qiVQ8uGR6xYRhoUkkwFat7eBIVWQ5Dy0M" />
-</head>
-</html>
-
-# VTuber Discord Bot (Hololive and Nijisanji)
-JDA Discord Bot Written in Java to get the schedules of VTubers. ARM compatible, to an extent.
-Currently there is support for all HololiveJP, EN, ID, Holostars, and Nijisanji personalities
-
-The two bots have useful features such as telling you when someone has gone live, listing the scheduled streams of talents, and a music bot feature featuring custom made and editable Vtuber music playlist (not restricted to just VTubers).
-
-For more information please visit the Github Page using the button above
+# VTuber Discord Bot
+This is a Java Maven Discord bot using the JDA library. The bot does not rely on APIs to retrieve upcoming livestreams, data is scarped using JSoup at timed intervals. However features beyond the core functionality rely on other APIs.
 
 ## Requirements 
 - Java Maven
-- Python 3.6
-- Youtube Data API V3 Key
-All dependencies should already be included in the pom.xml file 
+All additional dependencies should already be included in the pom.xml file 
 
 ## Building from source
 This project is formatted for Intellij IDEA 
@@ -25,8 +12,8 @@ This project is formatted for Intellij IDEA
 3. Fill in config.json under settings
 
 ## Features
-- Music Bot (Large Hololive Playlist), vTuber Schedule
-
+- Music Bot (Large Hololive Playlist), VTuber Upcoming livestreams
+- 
 ![Schedule](https://i.imgur.com/OpbhYNR.png)
 ![Schedule2](https://i.imgur.com/pMCfmSm.png)
 ![bot3](https://i.imgur.com/0csUW7g.png)
