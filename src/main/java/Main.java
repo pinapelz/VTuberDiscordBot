@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class Main extends ListenerAdapter{
@@ -31,17 +32,16 @@ public class Main extends ListenerAdapter{
     public static JDA jda;
     public static BotTool bottool = new BotTool();
     public static void main(String args[]) {
-
-
-
         try {
-
-            autoRefresh.buildNijiSchedule();
+            //autoRefresh.buildNijiSchedule();
             jdabuilder.addEventListeners(bottool);
-           // jdabuilder.addEventListeners(hololive);
             jdabuilder.addEventListeners(nijisanji);
             jdabuilder.addEventListeners(new ReactRoles());
             jdabuilder.addEventListeners(new Music(jda));
+            Runnable runnable =
+                    () -> { autoRefresh();};
+            Thread thread = new Thread(runnable);
+            thread.start();
             jda = jdabuilder.build();
 
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
@@ -82,5 +82,17 @@ public class Main extends ListenerAdapter{
         return (String) jo.get("discordToken");
 
     }
+    private static void autoRefresh(){
+        while(true){
+            try {
+                TimeUnit.MINUTES.sleep(15);
+                autoRefresh.buildNijiSchedule();
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+            }
+
+        }
+    }
+
 }
 

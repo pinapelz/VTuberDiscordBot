@@ -9,6 +9,8 @@ import org.jsoup.select.Elements;
 
 import java.awt.*;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -30,9 +32,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.util.List;
 
 public class NijisanjiTools extends ListenerAdapter {
-    static HashMap<String, String> memberIDMap = fillHashMap("data//nijiMemberID.txt");
+    static HashMap<String, String> memberIDMap = fillHashMapFromSite("nijiMemberID.txt");
     static ArrayList<Message> messageQueue = new ArrayList<Message>();
-    static HashMap<String, Integer> schedule = new HashMap<String, Integer>();
+    static HashMap<String, Integer> schedule = new HashMap<String, Integer>(); //
     static Set<String> keySet = memberIDMap.keySet();
     static Collection<String> values = memberIDMap.values(); //ids
     static HashMap<String, String> nijisanjiID = fillHashMapReverse("data//nijiMemberID.txt");
@@ -64,6 +66,7 @@ public class NijisanjiTools extends ListenerAdapter {
             scheduleNames.clear();
             scheduleTimes.clear();
             sortedSchedule.clear();
+            schedule = fillHashMapIntString("data//nijisanji.txt");
             sortedSchedule = sortByValue(schedule); //sorted from least to greatest
             for (Map.Entry<String, Integer> en : sortedSchedule.entrySet()) {
                 scheduleNames.add(en.getKey());
@@ -119,13 +122,14 @@ public class NijisanjiTools extends ListenerAdapter {
 
         }
     }
-    public static HashMap<String, String> fillHashMap(String file){
+
+    public static HashMap<String, Integer> fillHashMapIntString(String file){
         String delimiter = ":";
-        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, Integer> map = new HashMap<>();
         try(Stream<String> lines = Files.lines(Paths.get(file))){
             lines.filter(line -> line.contains(delimiter)).forEach(line ->
                     map.putIfAbsent(line.split(delimiter)[0]
-                    , line.split(delimiter)[1]));
+                            , Integer.parseInt(line.split(delimiter)[1])));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,87 +147,7 @@ public class NijisanjiTools extends ListenerAdapter {
         }
         return map;
     }
-    public static HashMap<String, Integer> fillHashMapInt(String file){
-        String delimiter = ":";
-        HashMap<String, Integer> map = new HashMap<>();
-        try(Stream<String> lines = Files.lines(Paths.get(file))){
-            lines.filter(line -> line.contains(delimiter)).forEach(line ->
-                    map.putIfAbsent(line.split(delimiter)[0]
-                            , Integer.parseInt(line.split(delimiter)[1])));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-    public static void buildNijiSchedule() throws IOException {
-        PrintWriter writer = new PrintWriter("data//nijisanji.txt");
-        writer.print("");
-        writer.close();
-        for (int i = 0;i<listOfValues.size();i++) {
-            String unixTime = "0";
-            String html = Jsoup.connect("https://www.youtube.com/channel/"+listOfValues.get(i)+"/live").get().html();
-            Document doc = Jsoup.parse(html);
-            Elements scriptElements = doc.getElementsByTag("script");
-            DataNode youtubeVariables = null;
-            for (Element element : scriptElements) {
-                for (DataNode node : element.dataNodes()) {
-                    if (element.data().contains("var ytInitialPlayerResponse")) {
-                        youtubeVariables = node;
-                    }
-                }
-            }
-            try {
-                if (youtubeVariables.equals(null)) {
-                }
-            } catch (Exception e) {
 
-            }
-            try {
-                Pattern pattern = Pattern.compile("\"scheduledStartTime\":\"(.*?)\"");
-                Matcher matcher = pattern.matcher(youtubeVariables.toString());
-                if (matcher.find()) {
-                    unixTime = matcher.group(1);
-                }
-                Date date = new java.util.Date(Integer.parseInt(unixTime) * 1000L);
-                Date currentDate = new Date();
-                SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-                sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-7"));
-                long difference_In_Time = date.getTime() - currentDate.getTime();
-                int difference_In_Days = (int) Math.abs(difference_In_Time / (8.64 * Math.pow(10, 7))); //conversion of ms to days
-                if(difference_In_Days<5&&difference_In_Days>=0){
-                    Files.write(Paths.get("data//nijisanji.txt"),("\n"+listOfKeys.get(i)+ ":" + unixTime).getBytes(), StandardOpenOption.APPEND);
-                }
-                else{
-                }
-
-            } catch (Exception e) {
-
-
-            }
-        }
-        removeBlankLines("data//nijisanji.txt");
-        schedule = fillHashMapInt("data//nijisanji.txt");
-    }
-    public static void removeBlankLines(String filename){
-        try
-        {
-            List<String> lines = FileUtils.readLines(new File(filename),"UTF-8");
-
-            Iterator<String> i = lines.iterator();
-            while (i.hasNext())
-            {
-                String line = i.next();
-                if (line.trim().isEmpty())
-                    i.remove();
-            }
-
-            FileUtils.writeLines(new File(filename), lines);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
     public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm)
     {
         List<Map.Entry<String, Integer> > list =
@@ -252,6 +176,35 @@ public class NijisanjiTools extends ListenerAdapter {
             }
         }
         return result;
+    }
+    public static HashMap<String, String> fillHashMapFromSite(String fileName){
+        try {
+            URL url = new URL("https://pinapelz.github.io/vtuber-data/"+fileName);
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            FileWriter writer = new FileWriter("data//"+fileName);
+            while ((line = in.readLine()) != null) {
+                writer.write(line+"\n");
+            }
+            writer.close();
+            in.close();
+        }
+        catch (MalformedURLException e) {
+            System.out.println("Malformed URL: " + e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println("I/O Error: " + e.getMessage());
+        }
+        String delimiter = ":";
+        HashMap<String, String> map = new HashMap<>();
+        try(Stream<String> lines = Files.lines(Paths.get("data//"+fileName))){
+            lines.filter(line -> line.contains(delimiter)).forEach(line ->
+                    map.putIfAbsent(line.split(delimiter)[0]
+                            , line.split(delimiter)[1]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
 }

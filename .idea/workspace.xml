@@ -5,15 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5beb24ca-4f0f-4013-b769-8bd10e4de63a" name="Default Changelist" comment="Converts regular English to KusoNihongo">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/hololive.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/memberID.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/memberList.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nijiMemberID.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/onionBot/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/onionBot/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings/discordToken.txt" beforeDir="false" afterPath="$PROJECT_DIR$/settings/discordToken.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/hololive/HololiveTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/hololive/HololiveTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/.idea/holoNotifyBot.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/discClient.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/embeddedMessages.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/holoChannelID.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/automaticRefresh/yt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/memberID.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/holoMemberID.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/memberList.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/nijiMemberID.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/nijiMemberID.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/nijisanjiChannel.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/hololive.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/hololiveMusic.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/hololiveMusic.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/src/fetch_html.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/src/scraping.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/src/util.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/text/help" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/text/hololive_members.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/text/hololive_members_en.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/holoCli/text/timezone" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/settings/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/nijisanji/NijisanjiTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/nijisanji/NijisanjiTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utilities/AutoRefreshLive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utilities/AutoRefreshLive.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/DiscordBot-1.0-SNAPSHOT-shaded.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/DiscordBot-1.0-SNAPSHOT-shaded.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/DiscordBot-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/DiscordBot-1.0-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/BotTool.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/BotTool.class" afterDir="false" />
@@ -25,9 +45,7 @@
       <change beforePath="$PROJECT_DIR$/target/classes/hololive/HololiveTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/hololive/HololiveTools.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/hololive/KusoNihongoConverter.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/nijisanji/NijisanjiTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/nijisanji/NijisanjiTools.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/nijisanji/ScreenShotTool.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/utilities/ScreenShotTool.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -67,6 +85,11 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../JSoupScrapingtest" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\donal\Desktop\GitHub Desktop\vTuberDiscordBot\data" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">

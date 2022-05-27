@@ -29,6 +29,7 @@ public class AutoRefreshLive {
     static ArrayList<String> listOfValues = new ArrayList<String>(keySet);
 
     public static void buildNijiSchedule() throws IOException {
+        System.out.println("Building Nijischedule");
         PrintWriter writer = new PrintWriter("data//nijisanji.txt"); //This needs to be auto
         writer.print("");
         writer.close();
