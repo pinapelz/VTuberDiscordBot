@@ -117,3 +117,12 @@ holoCli/hololive.txt
 data/nijisanjiChannel.txt
 data/nijiMemberID.txt
 data/memberList.txt
+settings/config.json
+target/classes/hololive/HololiveTools.class
+target/classes/hololive/KusoNihongoConverter.class
+target/classes/Main.class
+target/classes/nijisanji/NijisanjiTools.class
+target/classes/utilities/ScreenShotTool.class
+target/DiscordBot-1.0-SNAPSHOT-shaded.jar
+target/DiscordBot-1.0-SNAPSHOT.jar
+target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
