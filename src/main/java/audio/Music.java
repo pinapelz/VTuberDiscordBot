@@ -21,6 +21,8 @@ import org.jsoup.Jsoup;
 
 import java.io.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
@@ -56,10 +58,30 @@ public class Music  extends ListenerAdapter {
 
         return musicManager;
     }
+    private void populateHoloMusic(){
+        try {
+            URL url = new URL("https://pinapelz.github.io/vTuberDiscordBot/hololiveMusic.txt");
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            FileWriter writer = new FileWriter("data//hololiveMusic.txt");
+            while ((line = in.readLine()) != null) {
+                writer.write(line+"\n");
+            }
+            writer.close();
+            in.close();
+        }
+        catch (MalformedURLException e) {
+            System.out.println("Malformed URL: " + e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println("I/O Error: " + e.getMessage());
+        }
+    }
     private void fillHololiveMusic(){
+        populateHoloMusic();
         Scanner s = null;
         try {
-            s = new Scanner(new File("holoCli/hololiveMusic.txt"));
+            s = new Scanner(new File("data//hololiveMusic.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

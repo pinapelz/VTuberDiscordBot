@@ -1,5 +1,6 @@
 
 import com.darkprograms.speech.translator.GoogleTranslate;
+import holodex.HolodexApi;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -11,20 +12,34 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.DataNode;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import utilities.AutoRefreshLive;
 
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BotTool extends ListenerAdapter{
+    public BotTool(){
+
+    }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e){
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
+        if(msg.startsWith("!devcommand")){
+
+
+        }
         if (msg.startsWith("!setplaying")) {
             boolean allowChange = checkAdmin(e);
             if (allowChange) {
@@ -72,12 +87,12 @@ public class BotTool extends ListenerAdapter{
         else if(msg.equals("!help")){
             MessageBuilder helpMessage = new MessageBuilder().setEmbeds(new EmbedBuilder()
                     .setTitle("Holobot !help available commands", "https://github.com/pinapelz/holoDiscord")
-                    .setDescription("A list of available commands v.1.8b")
+                    .setDescription("A list of available commands v.2.0")
                     .setColor(new Color(8877218))
-                    .addField("!hl all [timezone]", "Shows the recent streams of \nHolostars and Hololive members", true)
-                    .addField("!hl [index] [timezone]", "Show more info about a stream after \ngetting the index from !hl all [timezone]", true)
-                    .addField("!hl upcoming", "Shows upcoming Hololive and Holostars Streams", false)
-                    .addField("!holoen [timezone]", "Shows recent streams for only Hololive English members", true)
+                    .addField("!holoschedule", "Shows the recent streams of \nHolostars and Hololive members", true)
+                    .addField("!holo [index]", "Show more info about a stream after \ngetting the index from !holoschedule", true)
+                    .addField("!nijischedule", "Shows recent streams of Nijisanji members", true)
+                    .addField("!iji [index]", "Show more info about a stream after \ngetting the index from !nijischedule", true)
                     .addField("!hlranking", "Ranks Hololive members by subscribers", false)
                     .addField("!musichelp", "Music Bot Commmands", false)
                     .build());
@@ -104,7 +119,7 @@ public class BotTool extends ListenerAdapter{
             try {
                 System.out.println("Requested translations for: " + translateText + " by " + e.getAuthor());
                 String translation = GoogleTranslate.translate("ja","en", translateText);
-                e.getChannel().sendMessage(translation).queue();
+                e.getChannel().sendMessage("TL: " + translation).queue();
             } catch (Exception ex) {
 
             }

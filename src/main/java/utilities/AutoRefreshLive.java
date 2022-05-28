@@ -1,4 +1,5 @@
 package utilities;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,10 +10,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import holodex.HolodexApi;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
@@ -21,15 +30,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class AutoRefreshLive {
-
-
-    public static void buildSchedule(String group,String nickname) throws IOException {
-        HashMap<String, String> memberIDMap = fillHashMap("data//"+nickname+"MemberID.txt");
+    HolodexApi holodex = new HolodexApi();
+    private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public static void buildSchedule(String group,String nickName) throws IOException {
+        HashMap<String, String> memberIDMap = fillHashMap("data//"+nickName+"MemberID.txt");
         Set<String> keySet = memberIDMap.keySet();
         Collection<String> values = memberIDMap.values(); //ids
         ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
         ArrayList<String> listOfValues = new ArrayList<String>(keySet);
-        PrintWriter writer = new PrintWriter("data//"+group+".txt"); //This needs to be auto
+        PrintWriter writer = new PrintWriter("data//"+group+".txt"); //Clearing the text file
         writer.print("");
         writer.close();
         for (int i = 0; i < listOfValues.size(); i++) {
@@ -77,7 +86,8 @@ public class AutoRefreshLive {
         }
         removeBlankLines("data//"+group+".txt");
     }
-    public static void removeBlankLines(String filename) {
+
+    private static void removeBlankLines(String filename) {
         try {
             List<String> lines = FileUtils.readLines(new File(filename), "UTF-8");
 
@@ -93,8 +103,66 @@ public class AutoRefreshLive {
             e.printStackTrace();
         }
     }
+    public ArrayList<Message> getCurrentlyLiveMessage(String discordChannelID,ArrayList<String> currentlyLiveData){
+        ArrayList<Message> messageQueue = new ArrayList<Message>();
+        String videoId = "";
+        String title = "";
+        String name = "";
+        for(int i = 0;i< currentlyLiveData.size();i++){
+            LocalDateTime now = LocalDateTime.now();
+            Pattern idPattern = Pattern.compile("\"id\":\"(.*?)\",");
+            Matcher idMatcher = idPattern.matcher(currentlyLiveData.get(i).toString());
+            Pattern namePattern = Pattern.compile("\"english_name\":\"(.*?)\"}");
+            Matcher nameMatcher = namePattern.matcher(currentlyLiveData.get(i).toString());
+            Pattern titlePattern = Pattern.compile("\"title\":\"(.*?)\",");
+            Matcher titleMatcher = titlePattern.matcher(currentlyLiveData.get(i).toString());
+            idMatcher.find();
+            nameMatcher.find();
+            titleMatcher.find();
+            EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg").setColor(new Color(0x181819))
+                    .setFooter("Retreived at " + dtf.format(now) + "- DS",
+                            "https://img.discogs.com/B416C4GICJEQPsATudXjk95wJbo=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/L-1773362-1582250333-9292.jpeg.jpg")
+                    .setTitle(nameMatcher.group(1)+" is Live!")
+                    .setDescription(titleMatcher.group(1))
+                    .setImage("https://img.youtube.com/vi/"+idMatcher.group(1)+"/hqdefault.jpg");
+            MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
+            messageQueue.add(messageBuilder.build());
+            System.out.println(idMatcher.group(1)+"   " + nameMatcher.group(1)+"   "+titleMatcher.group(1));
+        }
+        return messageQueue;
 
-    public static HashMap<String, String> fillHashMap(String file) {
+    }
+    public ArrayList<String> getCurrentlyLiveChannels(String group, String nickName) throws FileNotFoundException {
+        ArrayList<String> currLiveData = new ArrayList<String>();
+        HashMap<String, String> memberIDMap = fillHashMap("data//"+nickName+"MemberID.txt");
+        Set<String> keySet = memberIDMap.keySet();
+        Collection<String> values = memberIDMap.values(); //ids
+        ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
+        ArrayList<String> listOfValues = new ArrayList<String>(keySet);
+        PrintWriter writer = new PrintWriter("data//"+group+".txt"); //Clearing the text file
+        writer.print("");
+        writer.close();
+       for (int i = 0;i<listOfValues.size();i++){
+           if (holodex.isLiveData(listOfValues.get(i)).equals("[]")) { //Condition of if channel is not live
+               //Do nothing
+           }
+           else{
+               currLiveData.add(holodex.isLiveData(listOfValues.get(i)));
+           }
+       }
+        for (int i = 0;i<currLiveData.size();i++){ //Final clean up to get rid of blank lines and random empty cells
+            //This shouldn't even need to happen but I guess when the API messes up this will fix it
+            if(currLiveData.get(i).equals("[]")||currLiveData.get(i).equals("")){
+                currLiveData.remove(i);
+            }
+
+        }
+
+        return currLiveData;
+    }
+
+
+    private static HashMap<String, String> fillHashMap(String file) {
         String delimiter = ":";
         HashMap<String, String> map = new HashMap<>();
         try (Stream<String> lines = Files.lines(Paths.get(file))) {
@@ -107,31 +175,4 @@ public class AutoRefreshLive {
         return map;
     }
 
-    public static HashMap<String, String> fillHashMapReverse(String file) {
-        String delimiter = ":";
-        HashMap<String, String> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get(file))) {
-            lines.filter(line -> line.contains(delimiter)).forEach(line ->
-                    map.putIfAbsent(line.split(delimiter)[1]
-                            , line.split(delimiter)[0]));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    public static HashMap<String, Integer> fillHashMapInt(String file) {
-        String delimiter = ":";
-        HashMap<String, Integer> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get(file))) {
-            lines.filter(line -> line.contains(delimiter)).forEach(line ->
-                    map.putIfAbsent(line.split(delimiter)[0]
-                            , Integer.parseInt(line.split(delimiter)[1])));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-
-
-    }
 }

@@ -23,32 +23,37 @@ import java.util.stream.Stream;
 
 
 public class HololiveTools extends ListenerAdapter {
-    static HashMap<String, String> memberIDMap = fillHashMapFromSite("holoMemberID.txt");
-    static ArrayList<Message> messageQueue = new ArrayList<Message>();
-    static HashMap<String, Integer> schedule = new HashMap<String, Integer>(); //
-    static Set<String> keySet = memberIDMap.keySet();
-    static Collection<String> values = memberIDMap.values(); //ids
-    static HashMap<String, String> nijisanjiID = fillHashMap("data//holoMemberID.txt");
-    static ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
-    static ArrayList<String> listOfValues = new ArrayList<String>(keySet);
-    static ArrayList<Integer> scheduleTimes=new ArrayList<Integer>();
-    static ArrayList<String> scheduleNames=new ArrayList<String>();
-    static ArrayList<String> finalSchedule = new ArrayList<String>();
-    static ArrayList<String> finalScheduleLine2 = new ArrayList<String>();
-    static HashMap<String, Integer> sortedSchedule = new HashMap<String, Integer>();
-    static ArrayList<String> individualSchedule = new ArrayList<String>();
+    private static HashMap<String, String> memberIDMap = fillHashMapFromSite("holoMemberID.txt");
+    private static ArrayList<Message> messageQueue = new ArrayList<Message>();
+    private static HashMap<String, Integer> schedule = new HashMap<String, Integer>(); //
+    private static Set<String> keySet = memberIDMap.keySet();
+    private static Collection<String> values = memberIDMap.values(); //ids
+    private static HashMap<String, String> nijisanjiID = fillHashMap("data//holoMemberID.txt");
+    private static ArrayList<String> listOfKeys = new ArrayList<String>(values); //names
+    private static ArrayList<String> listOfValues = new ArrayList<String>(keySet);
+    private static ArrayList<Integer> scheduleTimes=new ArrayList<Integer>();
+    private static ArrayList<String> scheduleNames=new ArrayList<String>();
+    private static ArrayList<String> finalSchedule = new ArrayList<String>();
+    private static ArrayList<String> finalScheduleLine2 = new ArrayList<String>();
+    private static HashMap<String, Integer> sortedSchedule = new HashMap<String, Integer>();
+    private static ArrayList<String> individualSchedule = new ArrayList<String>();
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.startsWith("!holo")&&!msg.startsWith("!holoschedule")){
+        if(msg.startsWith("!holo")&&!msg.startsWith("!holoschedule")&&!msg.startsWith("!holomusic")){
             msg = msg.replaceAll("!holo", "");
             msg = msg.replaceAll("\\s+", "");
             int index = Integer.parseInt(msg);
             index--;
-            e.getChannel().sendMessage(individualSchedule.get(index)).queue();
+            try {
+                e.getChannel().sendMessage(individualSchedule.get(index)).queue();
+            }
+            catch(Exception ef){
+                e.getChannel().sendMessage("Please populate the list with !holoschedule before attempting to index").queue();
+            }
         }
         if(msg.startsWith("!holoschedule")){
             LocalDateTime now = LocalDateTime.now();
@@ -67,15 +72,15 @@ public class HololiveTools extends ListenerAdapter {
                 Date date = new java.util.Date(scheduleTimes.get(i) * 1000L);
                 SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM-dd HH:mm z");
                 sdf.setTimeZone(java.util.TimeZone.getTimeZone("PST"));
-                finalSchedule.add(scheduleNames.get(i)+" - "+ sdf.format(date));
+                finalSchedule.add(scheduleNames.get(i)+" - <t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>" );
                 finalScheduleLine2.add("https://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
-                individualSchedule.add(scheduleNames.get(i)+"         "+ sdf.format(date)+"\nhttps://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
+                individualSchedule.add(scheduleNames.get(i)+"         "+  "<t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>"+"\nhttps://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
             }
             if(finalSchedule.size()>25){
                 EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png").setColor(new Color(0x181819))
                         .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                                 "https://upload.wikimedia.org/wikipedia/commons/9/9b/Cover_Corp_vertical_logo_1.png")
-                        .setDescription("For more info about each stream use");
+                        .setDescription("For more info about each stream use !holo <number>");
                 int index = 1;
                 for(int i=0;i<26;i++){
                     embed.addField(index+". "+finalSchedule.get(i),finalScheduleLine2.get(i),false);
@@ -100,7 +105,7 @@ public class HololiveTools extends ListenerAdapter {
                 EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png").setColor(new Color(0x1A5387))
                         .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
                                 "https://upload.wikimedia.org/wikipedia/commons/9/9b/Cover_Corp_vertical_logo_1.png")
-                        .setDescription("For more info about each stream use");
+                        .setDescription("For more info about each stream use !holo <number>");
                 int index = 1;
                 for(int i=0;i<finalSchedule.size();i++){
                     embed.addField(index+". "+finalSchedule.get(i),finalScheduleLine2.get(i),false);
