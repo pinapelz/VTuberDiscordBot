@@ -39,11 +39,7 @@ public class BotTool extends ListenerAdapter{
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
         if(msg.startsWith("!devcommand")){
-            try {
-                System.out.println(yt.getTitleFromChannelID("UC4WvIIAo89_AzGUh1AZ6Dkg"));
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
+     
         }
         if (msg.startsWith("!setplaying")) {
             boolean allowChange = checkAdmin(e);
