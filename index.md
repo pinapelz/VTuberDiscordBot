@@ -5,6 +5,7 @@ This is a Java Maven Discord bot using the JDA library. The bot does not rely on
 - Java Maven
 All additional dependencies should already be included in the pom.xml file 
 
+- Attention! Create 2 text channels called nijisanji-live and hololive-live to make use of currently live feature!
 ## Building from source
 This project is formatted for Intellij IDEA 
 1. Download Source
@@ -13,9 +14,11 @@ This project is formatted for Intellij IDEA
 
 ## Features
 - Music Bot (Large Hololive Playlist), VTuber Upcoming livestreams
-- 
-![Schedule](https://i.imgur.com/OpbhYNR.png)
-![Schedule2](https://i.imgur.com/pMCfmSm.png)
-![bot3](https://i.imgur.com/0csUW7g.png)
+- Update channels constantly to show who is currently livestreaming
+
+
+![Schedule](https://i.imgur.com/olHuOVO.png)
+![Schedule2](https://imgur.com/rWow478.png)
+![bot3](https://imgur.com/auKNj1X.png)
 
 
