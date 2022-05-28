@@ -16,12 +16,13 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class Main extends ListenerAdapter{
+public class Main extends ListenerAdapter {
     private static ArrayList<Message> currentlyLiveHoloQueue = new ArrayList<Message>();
     private static ArrayList<Message> currentlyLiveNijiQueue = new ArrayList<Message>();
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -33,22 +34,24 @@ public class Main extends ListenerAdapter{
     public static JDABuilder jdabuilder = JDABuilder.createDefault(readSetting("discordToken")).addEventListeners(new Main());
     public static JDA jda;
     public static BotTool bottool = new BotTool();
+
     public static void main(String args[]) {
         try {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(nijisanji);
             jdabuilder.addEventListeners(hololive);
-            //currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage("979833458165678100",autoRefresh.getCurrentlyLiveChannels("nijisanji","niji"));
+            currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("hololive", "holo"),"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png");
+            currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("nijisanji","niji"),"https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg");
             autoRefresh.buildSchedule("hololive","holo");
             autoRefresh.buildSchedule("nijisanji","niji");
             jdabuilder.addEventListeners(new Music(jda));
-            Runnable runnable = () -> { autoRefresh();};
+            Runnable runnable = () -> {
+                autoRefresh();
+            };
             Thread thread = new Thread(runnable);
             thread.start();
             jda = jdabuilder.build();
             System.out.println(returnTimestamp() + " Bot Succsessfully Started!");
-
-
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to Login");
@@ -63,15 +66,17 @@ public class Main extends ListenerAdapter{
 
 
     }
+
     public void logCommand(MessageReceivedEvent e, String message) {
         System.out.println(returnTimestamp() + " " + e.getAuthor() + " requested " + message);
     }
+
     public static String returnTimestamp() {
         now = LocalDateTime.now();
         return "[" + dtf.format(now) + "]";
     }
 
-    public static String readSetting(String parameter){
+    public static String readSetting(String parameter) {
         Object obj = null;
         try {
             obj = new JSONParser().parse(new FileReader("settings//config.json"));
@@ -84,26 +89,26 @@ public class Main extends ListenerAdapter{
         return (String) jo.get(parameter);
 
     }
-    private static void autoRefresh(){
+
+    private static void autoRefresh() {
 
         int minutesElapsed = 0;
-        while(true){
+        while (true) {
             try {
-
                 TimeUnit.MINUTES.sleep(1);
                 minutesElapsed++;
-                if(minutesElapsed == 20){
-                    autoRefresh.buildSchedule("hololive","holo");
-                    autoRefresh.buildSchedule("nijisanji","niji");
+                if (minutesElapsed == 20) {
+                    autoRefresh.buildSchedule("hololive", "holo");
+                    autoRefresh.buildSchedule("nijisanji", "niji");
                     minutesElapsed = 0;
-                }
-                else if(minutesElapsed == 10){
-                    TextChannel textChannel = jda.getTextChannelById("794409510063308820");
-                    textChannel.sendMessage("testMethod").queue();
+                } else if (minutesElapsed == 10) {
+                    currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("hololive", "holo"),"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png");
+                    currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("nijisanji","niji"),"https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg");
+                    refreshNijisanjiCurrLive();
+                    refreshHololiveCurrLive();
                 }
 
             } catch (Exception e) {
-                Thread.currentThread().interrupt();
             }
 
         }
@@ -111,9 +116,69 @@ public class Main extends ListenerAdapter{
 
     @Override
     public void onReady(ReadyEvent event) {
-        TextChannel textChannel = jda.getTextChannelById("794409510063308820");
-        textChannel.sendMessage("testMethod").queue();
+        try{
+            refreshHololiveCurrLive();
+            refreshNijisanjiCurrLive();
+        }
+        catch(Exception e){
+
+        }
+
+
     }
+
+    public static void refreshNijisanjiCurrLive() {
+
+            List<TextChannel> channels = jda.getTextChannelsByName("nijisanji-live", true);
+            for (TextChannel textChannel : channels) {
+                textChannel.createCopy().queue();
+                textChannel.delete().queue();
+            }
+
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<TextChannel> freshChannel = jda.getTextChannelsByName("nijisanji-live", true);
+            for (TextChannel textChannel : freshChannel) {
+                for (int i = 0; i < currentlyLiveNijiQueue.size(); i++) {
+                    try {
+                        textChannel.sendMessage(currentlyLiveNijiQueue.get(i)).queue();
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+            }
+
+    }
+    public static void refreshHololiveCurrLive() {
+            List<TextChannel> channels = jda.getTextChannelsByName("hololive-live", true);
+            for (TextChannel textChannel : channels) {
+                textChannel.createCopy().queue();
+                textChannel.delete().queue();
+            }
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            List<TextChannel> freshChannel = jda.getTextChannelsByName("hololive-live", true);
+            for (TextChannel textChannel : freshChannel) {
+                for (int i = 0; i < currentlyLiveHoloQueue.size(); i++) {
+                    try {
+                        textChannel.sendMessage(currentlyLiveHoloQueue.get(i)).queue();
+                    }
+                    catch(Exception e){
+
+                    }
+                }
+            }
+
+
+        }
 
 
 }

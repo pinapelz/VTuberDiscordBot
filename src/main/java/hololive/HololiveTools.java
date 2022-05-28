@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import utilities.YoutubeScrape;
 
 import java.awt.*;
 import java.io.*;
@@ -36,29 +37,46 @@ public class HololiveTools extends ListenerAdapter {
     private static ArrayList<String> finalSchedule = new ArrayList<String>();
     private static ArrayList<String> finalScheduleLine2 = new ArrayList<String>();
     private static HashMap<String, Integer> sortedSchedule = new HashMap<String, Integer>();
-    private static ArrayList<String> individualSchedule = new ArrayList<String>();
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private static YoutubeScrape yt = new YoutubeScrape();
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
         if(msg.startsWith("!holo")&&!msg.startsWith("!holoschedule")&&!msg.startsWith("!holomusic")){
+            LocalDateTime now = LocalDateTime.now();
             msg = msg.replaceAll("!holo", "");
             msg = msg.replaceAll("\\s+", "");
             int index = Integer.parseInt(msg);
             index--;
             try {
-                e.getChannel().sendMessage(individualSchedule.get(index)).queue();
+                try {
+                    Date date = new java.util.Date(scheduleTimes.get(index) * 1000L);
+                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM-dd HH:mm z");
+                    String vidID = yt.getVideoIDFromChannelID(nijisanjiID.get(scheduleNames.get(index)));
+                    EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg").setColor(new Color(0x181819))
+                            .setDescription("<t:"+scheduleTimes.get(index)+":f> "+ "<t:"+scheduleTimes.get(index)+":R>")
+                            .setFooter("Retreived at " + dtf.format(now) + "- DS","https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg")
+                            .setTitle(scheduleNames.get(index) + " is streaming soon!")
+                            .setImage("https://img.youtube.com/vi/" +  vidID + "/hqdefault.jpg");
+                    embed.addField("Stream Title",yt.getTitleFromChannelID(nijisanjiID.get(scheduleNames.get(index))),false);
+                    embed.addField("Link", "https://www.youtube.com/watch?v=" + vidID, false);
+                    MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
+                    e.getChannel().sendMessage(messageBuilder.build()).queue();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+
             }
             catch(Exception ef){
-                e.getChannel().sendMessage("Please populate the list with !holoschedule before attempting to index").queue();
+                e.getChannel().sendMessage("Please populate the list with !nijischedule before attempting to index").queue();
             }
         }
         if(msg.startsWith("!holoschedule")){
             LocalDateTime now = LocalDateTime.now();
             finalSchedule.clear();
-            individualSchedule.clear();
             scheduleNames.clear();
             scheduleTimes.clear();
             sortedSchedule.clear();
@@ -74,7 +92,6 @@ public class HololiveTools extends ListenerAdapter {
                 sdf.setTimeZone(java.util.TimeZone.getTimeZone("PST"));
                 finalSchedule.add(scheduleNames.get(i)+" - <t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>" );
                 finalScheduleLine2.add("https://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
-                individualSchedule.add(scheduleNames.get(i)+"         "+  "<t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>"+"\nhttps://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
             }
             if(finalSchedule.size()>25){
                 EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png").setColor(new Color(0x181819))

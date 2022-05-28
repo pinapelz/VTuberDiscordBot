@@ -42,7 +42,6 @@ public class AutoRefreshLive {
         writer.print("");
         writer.close();
         for (int i = 0; i < listOfValues.size(); i++) {
-            System.out.println("Building " + group+ " schedule for " + listOfKeys.get(i) + "  " + (i+1) +" of " + listOfValues.size());
             String unixTime = "0";
             String html = Jsoup.connect("https://www.youtube.com/channel/" + listOfValues.get(i) + "/live").get().html();
             Document doc = Jsoup.parse(html);
@@ -103,31 +102,35 @@ public class AutoRefreshLive {
             e.printStackTrace();
         }
     }
-    public ArrayList<Message> getCurrentlyLiveMessage(String discordChannelID,ArrayList<String> currentlyLiveData){
+    public ArrayList<Message> getCurrentlyLiveMessage(ArrayList<String> currentlyLiveData,String logo){
         ArrayList<Message> messageQueue = new ArrayList<Message>();
         String videoId = "";
         String title = "";
         String name = "";
         for(int i = 0;i< currentlyLiveData.size();i++){
-            LocalDateTime now = LocalDateTime.now();
-            Pattern idPattern = Pattern.compile("\"id\":\"(.*?)\",");
-            Matcher idMatcher = idPattern.matcher(currentlyLiveData.get(i).toString());
-            Pattern namePattern = Pattern.compile("\"english_name\":\"(.*?)\"}");
-            Matcher nameMatcher = namePattern.matcher(currentlyLiveData.get(i).toString());
-            Pattern titlePattern = Pattern.compile("\"title\":\"(.*?)\",");
-            Matcher titleMatcher = titlePattern.matcher(currentlyLiveData.get(i).toString());
-            idMatcher.find();
-            nameMatcher.find();
-            titleMatcher.find();
-            EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg").setColor(new Color(0x181819))
-                    .setFooter("Retreived at " + dtf.format(now) + "- DS",
-                            "https://img.discogs.com/B416C4GICJEQPsATudXjk95wJbo=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/L-1773362-1582250333-9292.jpeg.jpg")
-                    .setTitle(nameMatcher.group(1)+" is Live!")
-                    .setDescription(titleMatcher.group(1))
-                    .setImage("https://img.youtube.com/vi/"+idMatcher.group(1)+"/hqdefault.jpg");
-            MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
-            messageQueue.add(messageBuilder.build());
-            System.out.println(idMatcher.group(1)+"   " + nameMatcher.group(1)+"   "+titleMatcher.group(1));
+            try {
+                LocalDateTime now = LocalDateTime.now();
+                Pattern idPattern = Pattern.compile("\"id\":\"(.*?)\",");
+                Matcher idMatcher = idPattern.matcher(currentlyLiveData.get(i));
+                Pattern namePattern = Pattern.compile("\"english_name\":\"(.*?)\"}}");
+                Matcher nameMatcher = namePattern.matcher(currentlyLiveData.get(i));
+                Pattern titlePattern = Pattern.compile("\"title\":\"(.*?)\",");
+                Matcher titleMatcher = titlePattern.matcher(currentlyLiveData.get(i));
+                idMatcher.find();
+                nameMatcher.find();
+                titleMatcher.find();
+                EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg").setColor(new Color(0x181819))
+                        .setFooter("Retreived at " + dtf.format(now) + "- DS","https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg")
+                        .setTitle(nameMatcher.group(1) + " is Live!")
+                        .setDescription(titleMatcher.group(1))
+                        .setImage("https://img.youtube.com/vi/" + idMatcher.group(1) + "/hqdefault.jpg");
+                embed.addField("Link", "https://www.youtube.com/watch?v=" + idMatcher.group(1), false);
+                MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
+                messageQueue.add(messageBuilder.build());
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
         }
         return messageQueue;
 
@@ -149,12 +152,14 @@ public class AutoRefreshLive {
            else{
                currLiveData.add(holodex.isLiveData(listOfValues.get(i)));
            }
+
        }
         for (int i = 0;i<currLiveData.size();i++){ //Final clean up to get rid of blank lines and random empty cells
             //This shouldn't even need to happen but I guess when the API messes up this will fix it
             if(currLiveData.get(i).equals("[]")||currLiveData.get(i).equals("")){
                 currLiveData.remove(i);
             }
+
 
         }
 

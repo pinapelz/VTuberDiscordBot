@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import utilities.YoutubeScrape;
 
 import java.util.List;
 
@@ -45,20 +46,38 @@ public class NijisanjiTools extends ListenerAdapter {
     private static ArrayList<String> finalScheduleLine2 = new ArrayList<String>();
     private static HolodexApi holodex = new HolodexApi();
     private static HashMap<String, Integer> sortedSchedule = new HashMap<String, Integer>();
-    private static ArrayList<String> individualSchedule = new ArrayList<String>();
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    YoutubeScrape yt = new YoutubeScrape();
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
         if(msg.startsWith("!niji")&&!msg.startsWith("!nijischedule")){
+            LocalDateTime now = LocalDateTime.now();
             msg = msg.replaceAll("!niji", "");
             msg = msg.replaceAll("\\s+", "");
             int index = Integer.parseInt(msg);
             index--;
             try {
-                e.getChannel().sendMessage(individualSchedule.get(index)).queue();
+                try {
+                    Date date = new java.util.Date(scheduleTimes.get(index) * 1000L);
+                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM-dd HH:mm z");
+                    String vidID = yt.getVideoIDFromChannelID(nijisanjiID.get(scheduleNames.get(index)));
+                   EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg").setColor(new Color(0x181819))
+                           .setDescription("<t:"+scheduleTimes.get(index)+":f> "+ "<t:"+scheduleTimes.get(index)+":R>")
+                            .setFooter("Retreived at " + dtf.format(now) + "- DS","https://64.media.tumblr.com/c4de87a6b466871a11f0f428efc2fccb/bca622fcfec2b690-cd/s400x600/802ad91ca198b58ef8c54bc6f7cd704f9528d7a3.jpg")
+                            .setTitle(scheduleNames.get(index) + " is streaming soon!")
+                            .setImage("https://img.youtube.com/vi/" +  vidID + "/hqdefault.jpg");
+                    embed.addField("Stream Title",yt.getTitleFromChannelID(nijisanjiID.get(scheduleNames.get(index))),false);
+                    embed.addField("Link", "https://www.youtube.com/watch?v=" + vidID, false);
+                    MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
+                    e.getChannel().sendMessage(messageBuilder.build()).queue();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+
             }
             catch(Exception ef){
                 e.getChannel().sendMessage("Please populate the list with !nijischedule before attempting to index").queue();
@@ -67,7 +86,6 @@ public class NijisanjiTools extends ListenerAdapter {
         if(msg.startsWith("!nijischedule")){
             LocalDateTime now = LocalDateTime.now();
             finalSchedule.clear();
-            individualSchedule.clear();
             scheduleNames.clear();
             scheduleTimes.clear();
             sortedSchedule.clear();
@@ -85,8 +103,8 @@ public class NijisanjiTools extends ListenerAdapter {
                 sdf.setTimeZone(java.util.TimeZone.getTimeZone("PST"));
                 finalSchedule.add(scheduleNames.get(i)+" - <t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>" );
                 finalScheduleLine2.add("https://www.youtube.com/channel/"+nijisanjiID.get(scheduleNames.get(i))+"/live");
-                individualSchedule.add(scheduleNames.get(i)+"         "+  "<t:"+scheduleTimes.get(i)+":f> "+ "<t:"+scheduleTimes.get(i)+":R>"
-                        +"\nhttps://www.youtube.com/watch?v=/"+nijisanjiID.get(scheduleNames.get(i)));
+                EmbedBuilder embed = null;
+
             }
 
 
@@ -218,23 +236,7 @@ public class NijisanjiTools extends ListenerAdapter {
         }
         return map;
     }
-/*
-    public void apireader(){
-        URL url = new URL("https://www.robotevents.com/api/v2/teams?number%5B%5D="+team+"&program%5B%5D=1&myTeams=false");
-        HttpURLConnection http = (HttpURLConnection) url.openConnection();
-        http.setRequestProperty("accept", "application/json");
-        http.setRequestProperty("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYmY4Mjc5YjVjZjdmN2RjNjdkNjk3ZDlhYzUzZDJiMjdmOTg2OWRlM2EyZWMzYWM4OGZmMTc2OTIyZDFkMjI3MjFmZDIxMTU2OGZiNmNkN2QiLCJpYXQiOjE2NDk1Mjc5MzAuMzI2ODUyMSwibmJmIjoxNjQ5NTI3OTMwLjMyNjg1NDksImV4cCI6MjU5NjMwMjczMC4zMjA5OTIsInN1YiI6IjEwMTUxNiIsInNjb3BlcyI6W119.GNnF1c_5fWoNZJww451fxnmzMiOn5DqZD35cQIeWBAWYmldQ61LXy63cKJuydVXkgSD_zIfc0TrAjiyBGiWy849CmugG1AqTiyyFPySIaTsStBrzbE36TN3T6pNjOf7Lpb3n_4TdTSFPmTF-wf564lKwpkPbaDeBh_Fsdj4TbaDCcQA1jFqipumhaRwsPqub9D7sgkdsxFWxEH2kYDpYOgJvzIDfijPtDLusQJfuxxO5C-jIf3yXgl-FlgpcW4Cwgc1FQ7Rf5QXcnDJ5TWq6-Eo5PoBca-21OE_ifzQmIehi8L10IBkkQTqcsqPj9AtYFfOlZTa7rlH20-7Wfpzt-P21fkx3CEoW7Wslzr3hq-rb823DXloo1sbs-HXGJ6YxUj_p8k3dWbnEYXqxWENofdaBtwlepLnNhSfWUYq13JaQAIaun8qgRQaomw5bHdA_Ni46D3fM76FODmoiOmC9TtLTb_FKyu5xbLzP1OEIzXm_tFy0qJuj3azc9-MR1WpmoAwqJhYY3Z0MTmtIh4X-V2b2CgV-qpMa-CjmVPdTnAoJWpzOefqiopWGdKpcgEDUCpUsdcJvYWfrZDww7yQLxiQdc7er122sRu5gqJEeNJOjG2w254JyxMUD0qQd1GUEykWgyFEILpiI9nBIwDJLTUlfNU8-YDKTeIJEefvJ7G4");
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                http.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-    }
- */
 
 }
 

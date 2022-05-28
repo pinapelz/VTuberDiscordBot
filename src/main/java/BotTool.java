@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import utilities.AutoRefreshLive;
+import utilities.YoutubeScrape;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BotTool extends ListenerAdapter{
+    YoutubeScrape yt = new YoutubeScrape();
     public BotTool(){
 
     }
@@ -37,8 +39,11 @@ public class BotTool extends ListenerAdapter{
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
         if(msg.startsWith("!devcommand")){
-
-
+            try {
+                System.out.println(yt.getTitleFromChannelID("UC4WvIIAo89_AzGUh1AZ6Dkg"));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
         }
         if (msg.startsWith("!setplaying")) {
             boolean allowChange = checkAdmin(e);
