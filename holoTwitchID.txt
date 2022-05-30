@@ -1,0 +1,28 @@
+robocosan_hololive:Robocosan
+shirakamifubuki_holo:Shirakami Fubuki
+akaihaato_hololive:Akai Haato
+minatoaquach_hololive:Minato Aqua
+murasakishionch_hololive:Murasaki Shion
+usadapekora_hololive:Usada Pekora
+amanekanata_hololive:Amane Kanata
+tsunomakiwatame_hololive:Tsunomaki Watame
+tokoyamitowa_holo:Tokoyami Towa
+himemoriluna_hololive:Himemori Luna
+yukihanalamy_hololive:Yukihana Lamy
+momosuzunene_hololive:Momosuzu Nene
+shishirobotan_hololive:Shishiro Botan
+laplusdarknesss_hololive:Laplus Darkness
+hakuikoyori_hololive:Hakui Koyori
+kazamairoha_holo:Kazama Iroha
+hanasakimiyabi_holostars:Hanasaki Miyabi
+kanadeizuru_holostars:Kanade Izuru
+arurandeisu_holostars:Arurandeisu
+rikka_holostars:Rikka
+kishidotemma_holostars:Kishido Tenma
+yukokuroberu_holostars:Yukoku Roberu
+kageyamashien_holostars:Kageyama Shien
+aragamioga_holostars:Aragami Oga
+moricalliope_hololiveen:Mori Calliope
+gawrgura:Gawr Gura
+sakuramiko_hololive:Sakura Miko
+watsonamelia_hololiveen:Amelia Watson
