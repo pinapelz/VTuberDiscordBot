@@ -356,7 +356,7 @@ public class Music  extends ListenerAdapter {
     private static void addHoloSong(String url){
         Writer output;
         try {
-            output = new BufferedWriter(new FileWriter("holoCli/hololiveMusic.txt",true));
+            output = new BufferedWriter(new FileWriter("data//pending.txt",true));
             output.append("\n"+url);
             output.close();
         } catch (IOException e) {
