@@ -8,6 +8,4 @@ The project should be built as a shaded jar.
 
 For more information and help please visit the website [here](https://pinapelz.github.io/vTuberDiscordBot/)
 
-Webhook Enabled
-
 
