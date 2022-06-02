@@ -1,5 +1,9 @@
 
 import com.darkprograms.speech.translator.GoogleTranslate;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import holodex.HolodexApi;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -21,14 +25,17 @@ import utilities.AutoRefreshLive;
 import utilities.YoutubeScrape;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BotTool extends ListenerAdapter{
     YoutubeScrape yt = new YoutubeScrape();
+    HolodexApi holodex = new HolodexApi();
     public BotTool(){
 
     }
@@ -38,8 +45,8 @@ public class BotTool extends ListenerAdapter{
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-        if(msg.startsWith("!devcommand")){
-     
+        if(msg.startsWith("!developer")){
+            System.out.println(holodex.isLiveData("UCIeSUTOTkF9Hs7q3SGcO-Ow"));
         }
         if (msg.startsWith("!setplaying")) {
             boolean allowChange = checkAdmin(e);
@@ -52,6 +59,7 @@ public class BotTool extends ListenerAdapter{
                 e.getChannel().sendMessage("You have no authority to tell me what to do").queue();
             }
         }
+
 
 
         else if (msg.startsWith("!setwatching")) {

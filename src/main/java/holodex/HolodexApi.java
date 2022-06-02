@@ -23,11 +23,13 @@ public class HolodexApi {
                 apiResult = inputLine;
             }
             in.close();
+            System.out.println("Response with code: " + http.getResponseCode());
             http.disconnect();
 
         } catch (Exception E) {
 
         }
+
         return apiResult;
     }
 }

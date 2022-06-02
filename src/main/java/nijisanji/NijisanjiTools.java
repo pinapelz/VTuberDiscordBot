@@ -2,11 +2,6 @@ package nijisanji;
 import holodex.HolodexApi;
 import net.dv8tion.jda.api.MessageBuilder;
 import org.apache.commons.io.FileUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.DataNode;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.awt.*;
 import java.io.*;
@@ -24,7 +19,6 @@ import java.util.stream.Stream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import utilities.YoutubeScrape;
@@ -106,8 +100,6 @@ public class NijisanjiTools extends ListenerAdapter {
                 EmbedBuilder embed = null;
 
             }
-
-
             if(finalSchedule.size()>25){
                 EmbedBuilder embed = new EmbedBuilder().setThumbnail("https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg").setColor(new Color(0x181819))
                         .setFooter("Retreived at PST " + dtf.format(now) + "- DS",
@@ -236,6 +228,7 @@ public class NijisanjiTools extends ListenerAdapter {
         }
         return map;
     }
+
 
 
 }

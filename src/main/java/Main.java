@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class Main extends ListenerAdapter {
     private static ArrayList<Message> currentlyLiveHoloQueue = new ArrayList<Message>();
     private static ArrayList<Message> currentlyLiveNijiQueue = new ArrayList<Message>();
+    private static ArrayList<Message> currentlyLiveMiscQueue = new ArrayList<Message>();
     private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
     private static LocalDateTime now = LocalDateTime.now();
@@ -40,11 +41,19 @@ public class Main extends ListenerAdapter {
             jdabuilder.addEventListeners(bottool);
             jdabuilder.addEventListeners(nijisanji);
             jdabuilder.addEventListeners(hololive);
-            currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("hololive", "holo"),"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png");
-            currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("nijisanji","niji"),"https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg");
+            autoRefresh.updateFileFromSite("nijiTwitchID.txt");
+            autoRefresh.updateFileFromSite("holoTwitchID.txt");
+            autoRefresh.updateFileFromSite("miscTwitchID.txt");
+            autoRefresh.updateFileFromSite("miscMemberID.txt");
+            currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("hololive", "holo"),
+                    autoRefresh.getCurrentlyLiveTwitchChannels("hololive","holo"));
+            currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("nijisanji","niji"),
+                    autoRefresh.getCurrentlyLiveTwitchChannels("nijisanji","niji"));
+            currentlyLiveMiscQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("others","misc"),
+                    autoRefresh.getCurrentlyLiveTwitchChannels("others","misc"));
             autoRefresh.buildSchedule("hololive","holo");
             autoRefresh.buildSchedule("nijisanji","niji");
-            jdabuilder.addEventListeners(new Music(jda));
+            jdabuilder.addEventListeners(new Music(jda,readSetting("youtubeApi")));
             Runnable runnable = () -> {
                 autoRefresh();
             };
@@ -63,8 +72,16 @@ public class Main extends ListenerAdapter {
         JDA jda = e.getJDA();
         Message message = e.getMessage();
         String msg = message.getContentDisplay();
-
-
+        if(msg.startsWith("!forcebuild")){
+            e.getChannel().sendMessage("Understood. Refreshing now!").queue();
+            try {
+                autoRefresh.buildSchedule("nijisanji","niji");
+                autoRefresh.buildSchedule("hololive","holo");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            e.getChannel().sendMessage("Build complete!").queue();
+        }
     }
 
     public void logCommand(MessageReceivedEvent e, String message) {
@@ -91,26 +108,38 @@ public class Main extends ListenerAdapter {
     }
 
     private static void autoRefresh() {
-
-        int minutesElapsed = 0;
+        int refreshLiveTimer = 0;
+        int refreshUpcomingTimer = 0;
         while (true) {
+
             try {
                 TimeUnit.MINUTES.sleep(1);
-                minutesElapsed++;
-                if (minutesElapsed == 20) {
+                if (refreshUpcomingTimer >=15) {
+                    System.out.println("15 Minutes Passed. Refreshing Live Status");
                     autoRefresh.buildSchedule("hololive", "holo");
                     autoRefresh.buildSchedule("nijisanji", "niji");
-                    minutesElapsed = 0;
-                } else if (minutesElapsed == 10) {
-                    currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("hololive", "holo"),"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Hololive_triangles_logo.svg/1200px-Hololive_triangles_logo.svg.png");
-                    currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveChannels("nijisanji","niji"),"https://pbs.twimg.com/profile_images/1335777549343883264/rVsyH8Jo.jpg");
+                    refreshUpcomingTimer= 0;
+
+
+                } else if (refreshLiveTimer>=7) { //using a range in case its caught in some other tasl
+                    System.out.println("7 Minutes Passed. Refreshing Live Status");
+                    currentlyLiveHoloQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("hololive", "holo"),
+                            autoRefresh.getCurrentlyLiveTwitchChannels("hololive","holo"));
+                    currentlyLiveNijiQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("nijisanji","niji"),
+                            autoRefresh.getCurrentlyLiveTwitchChannels("nijisanji","niji"));
+                    currentlyLiveMiscQueue = autoRefresh.getCurrentlyLiveMessage(autoRefresh.getCurrentlyLiveYoutubeChannels("others","misc"),
+                            autoRefresh.getCurrentlyLiveTwitchChannels("others","misc"));
                     refreshNijisanjiCurrLive();
                     refreshHololiveCurrLive();
+                    refreshOthersCurrLive();
+                  refreshLiveTimer = 0;
+
                 }
 
             } catch (Exception e) {
             }
-
+            refreshUpcomingTimer++;
+            refreshLiveTimer++;
         }
     }
 
@@ -119,6 +148,8 @@ public class Main extends ListenerAdapter {
         try{
             refreshHololiveCurrLive();
             refreshNijisanjiCurrLive();
+           refreshOthersCurrLive();
+            System.out.println("All Processes Finished Loading");
         }
         catch(Exception e){
 
@@ -126,7 +157,33 @@ public class Main extends ListenerAdapter {
 
 
     }
+    public static void refreshOthersCurrLive() {
 
+        List<TextChannel> channels = jda.getTextChannelsByName("misc-live", true);
+        for (TextChannel textChannel : channels) {
+            textChannel.createCopy().queue();
+            textChannel.delete().queue();
+        }
+
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<TextChannel> freshChannel = jda.getTextChannelsByName("misc-live", true);
+        for (TextChannel textChannel : freshChannel) {
+            for (int i = 0; i < currentlyLiveMiscQueue.size(); i++) {
+                try {
+                    textChannel.sendMessage(currentlyLiveMiscQueue.get(i)).queue();
+                }
+                catch (Exception e){
+
+                }
+            }
+        }
+
+    }
     public static void refreshNijisanjiCurrLive() {
 
             List<TextChannel> channels = jda.getTextChannelsByName("nijisanji-live", true);

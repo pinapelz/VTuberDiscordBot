@@ -7,8 +7,10 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -18,7 +20,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 
 
-
+import java.awt.*;
 import java.io.*;
 
 import java.net.MalformedURLException;
@@ -30,11 +32,12 @@ import java.util.concurrent.BlockingQueue;
 public class Music  extends ListenerAdapter {
     ArrayList<String> hololiveMusicURL = new ArrayList<String>();
     String apiKey = "";
+    static String append = "!";
 
     private final AudioPlayerManager playerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
     JDA jda;
-   public Music(JDA jda) {
+   public Music(JDA jda, String apiKey) {
         this.musicManagers = new HashMap<>();
         this.jda = jda;
         this.apiKey = apiKey;
@@ -100,11 +103,12 @@ public class Music  extends ListenerAdapter {
         String rawMessage = message.getContentDisplay();
         String[] command = event.getMessage().getContentRaw().split(" ", 2);
 
-        if ("!play".equals(command[0]) && command.length == 2) {
+        if ((append+"play").equals(command[0]) && command.length == 2) {
                 loadAndPlay(event.getChannel(), command[1],true);
         }
-        if (rawMessage.contains("!splay")) {
-            String searchString = rawMessage.replaceAll("!splay","");
+        if ((append+"splay").equals(command[0])) {
+            String searchString = command[1];
+            System.out.println(searchString);
             try {
                 event.getChannel().sendMessage("Found Video: " +  returnTopVideoURL(searchString)).queue();
                 loadAndPlay(event.getChannel(), returnTopVideoURL(searchString),true);
@@ -113,12 +117,12 @@ public class Music  extends ListenerAdapter {
             }
         }
 
-        else if ("!leave".equals(command[0]))
+        else if ((append+"leave").equals(command[0]))
         {
             guild.getAudioManager().setSendingHandler(null);
             guild.getAudioManager().closeAudioConnection();
         }
-        else if ("!pause".equals(command[0]))
+        else if ((append+"pause").equals(command[0]))
         {
             if (player.getPlayingTrack() == null)
             {
@@ -133,7 +137,7 @@ public class Music  extends ListenerAdapter {
                 event.getChannel().sendMessage("The player has resumed playing.").queue();
         }
 
-        else if ("!stop".equals(command[0]))
+        else if ((append+"stop").equals(command[0]))
         {
             scheduler.queue.clear();
             player.stopTrack();
@@ -141,11 +145,11 @@ public class Music  extends ListenerAdapter {
             event.getChannel().sendMessage("Playback has been completely stopped and the queue has been cleared.").queue();
         }
 
-        else if ("!skip".equals(command[0])) {
+        else if ((append+"skip").equals(command[0])) {
             skipTrack(event.getChannel());
         }
 
-        else if ("!volume".equals(command[0]))
+        else if ((append+"volume").equals(command[0]))
         {
             if (command.length == 1)
             {
@@ -166,7 +170,7 @@ public class Music  extends ListenerAdapter {
                 }
             }
         }
-        else if(command[0].equals("!holomusic")){
+        else if(command[0].equals((append+"holomusic"))){
             fillHololiveMusic();
             Collections.shuffle(hololiveMusicURL);
             int songsToQueue = Integer.parseInt(command[1]);
@@ -180,24 +184,33 @@ public class Music  extends ListenerAdapter {
 
         }
 
-        else if ("!nowplaying".equals(command[0]) || "!np".equals(command[0]))
+        else if ((append+"nowplaying").equals(command[0]) || (append+"np").equals(command[0]))
         {
             AudioTrack currentTrack = player.getPlayingTrack();
             if (currentTrack != null)
             {
                 String title = currentTrack.getInfo().title;
+                System.out.println(currentTrack.getIdentifier());
                 String position = getTimestamp(currentTrack.getPosition());
                 String duration = getTimestamp(currentTrack.getDuration());
 
                 String nowplaying = String.format("**Playing:** %s\n**Time:** [%s / %s]",
                         title, position, duration);
-
-                event.getChannel().sendMessage(nowplaying).queue();
+                EmbedBuilder embed = new EmbedBuilder()
+                        .setColor(new Color(0x181819))
+                        .setTitle("Now Playing: " + title)
+                        .setDescription(currentTrack.getInfo().author)
+                        .setImage("https://img.youtube.com/vi/" + currentTrack.getIdentifier() + "/hqdefault.jpg");
+                embed.addField("Timestamp: ","**["+position+"/"+duration+"]**",false);
+                embed.addField("", "https://www.youtube.com/watch?v=" + currentTrack.getIdentifier(), false);
+                MessageBuilder messageBuilder = (MessageBuilder) new MessageBuilder().setEmbeds(embed.build());
+                event.getChannel().sendMessage(messageBuilder.build()).queue();
             }
-            else
+            else {
                 event.getChannel().sendMessage("The player is not currently playing anything!").queue();
+            }
         }
-        else if ("!list".equals(command[0]))
+        else if ((append+"list").equals(command[0])||(append+"queue").equals(command[0]))
         {
             Queue<AudioTrack> queue = scheduler.queue;
             synchronized (queue)
@@ -211,24 +224,24 @@ public class Music  extends ListenerAdapter {
                     int trackCount = 0;
                     long queueLength = 0;
                     StringBuilder sb = new StringBuilder();
-                    sb.append("Current Queue: Entries: ").append(queue.size()).append("\n");
+                    sb.append("```Current Queue: Entries: ").append(queue.size()).append("\n");
                     for (AudioTrack track : queue)
                     {
                         queueLength += track.getDuration();
                         if (trackCount < 10)
                         {
-                            sb.append("`[").append(getTimestamp(track.getDuration())).append("]` ");
+                            sb.append("[").append(getTimestamp(track.getDuration())).append("] ");
                             sb.append(track.getInfo().title).append("\n");
                             trackCount++;
                         }
                     }
-                    sb.append("\n").append("Total Queue Time Length: ").append(getTimestamp(queueLength));
+                    sb.append("\n").append("Total Queue Time Length: ").append(getTimestamp(queueLength)+"```");
 
                     event.getChannel().sendMessage(sb.toString()).queue();
                 }
             }
         }
-        else if ("!shuffle".equals(command[0]))
+        else if ((append+"shuffle").equals(command[0]))
         {
             if (scheduler.queue.isEmpty())
             {
@@ -327,6 +340,7 @@ public class Music  extends ListenerAdapter {
     }
     private String returnTopVideoURL(String keyword) throws IOException {
         String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q="+keyword+"&type=video&key="+apiKey;
+        url = url.replaceAll(" ", "%20");
         String data = Jsoup.connect(url).ignoreContentType(true).execute().body();
         JSONObject obj = new JSONObject(data);
         JSONArray arr = obj.getJSONArray("items");
