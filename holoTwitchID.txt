@@ -26,3 +26,4 @@ moricalliope_hololiveen:Mori Calliope
 gawrgura:Gawr Gura
 sakuramiko_hololive:Sakura Miko
 watsonamelia_hololiveen:Amelia Watson
+vestiazeta_hololiveid:Vestia Zeta
