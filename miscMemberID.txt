@@ -19,10 +19,29 @@ UCV-9dgtVXHmqvzY9qdvoGYA:Lua Asuka
 UCg7sW-h1PUowdiR5K4HlBew:Rinkou Ashelia
 UCJ46YTYBQVXsfsp8-HryoUA:Pipkin Pippa
 UCx_zwZuGIS4jxO07kFk8G6Q:Kaneko Lumi
+UCB7sSUNwh_dXE7ZL3DsGDpw:Utatane Nasa
+UCJ46YTYBQVXsfsp8-HryoUA:Pipkin Pippa
+UC3K7pmiHsNSx1y0tdx2bbCw:Tenma Maemi
+UCN5bD1YYapThOeadG7YkBOA:Hakushika Iori
+UC1cExET9xoWSO9iSnRsW_1Q:Shisui Michiru
+UCUC1EIq0MtF-kctHPtQzIjQ:Amaris Yuri
+UCnJNNk45O1QYS2oMRYFKSyw:Amanogawa Shiina
+UCVo_KgPNsDKxHwzib7uarCw:Komachi Panko
+UC-hMwvRuMsQrfgu0DPKLV2A:Remilia Nephys
+UC5qlAhrec6-0J-K3zmhNPPQ:Chiasaka Airi
+UCJ4O6PWA47f6XbCgrLQNqEQ:Himeyama Rin
+UCupmjRr7kPgzXKh-cPxxGbg:Makina Erina
 
 UCnYhIk9aGEx_bIgheVjs53w:Luto Araka
 UCswvd6_YWmd6riRk-8oT-sA:Shiki Miyoshino
 UCpeRj9-GaLGNUoKdI5I7vZA:Pina Pengin
+UC2hWFlqMew61Jy6A8zu5HzQ:Iku Hoshifuri
+UCRWF6QSuklmwY3UJHyVTQ1w:Aoi Tokimori
+UCZfQRuwSLty74QAj55BaKlA:Meno Ibuki
+UCBJFsaCvgBa1a9BnEaxu97Q:Kamishiro Rita
+UCw1KNjVqfrJSfcFd6zlcSzA:Nia Suzune
+UCgM1sly6rnxqWe8GLbceEag:Naki Kamizuki
+UC0ZTVxCHkZanT5dnP2FZD4Q:Yura Rikudou
 
 UCZIFph1bYyGxmFkkNNLAKdA:Obake PAM
 UCZIFph1bYyGxmFkkNNLAKdA:Aka Mana
