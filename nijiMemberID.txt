@@ -58,7 +58,6 @@ UCwQ9Uv-m8xkE5PzRc7Bqx3Q:Era Otogibara
 UCHVXbQzkl3rDfsXWo8xi2qw:Ange Katrina
 UCXRlIK3Cw_TJIQC5kSJJQMg:Toko Inui
 UCZ1xuCK1kNmn5RzPYIZop3w:Lize Helesta
-UC_a1ZYZ8ZTXpjg9xUY9sj8w:Lulu Suzuhara
 UCNW1Ex0r6HsWRD4LCtPwvoQ:Akina Saegusa
 UC0WwEfE-jOM2rzjpdfhTzZA:Manami Aizono
 UCHX7YpFG8rVwhsHCx34xt7w:Mahiro Yukishiro
@@ -169,12 +168,17 @@ UCuuAb_72QzK0M1USPMEl1yw:Sonny Brisko
 UChJ5FTsHOu72_5OVx0rvsvQ:Uki Violeta
 UCQ1zGxHrfEmmW4CPpBx9-qw:Alban Knox
 UCGhqxhovNfaPBpxfCruy9EA:Fulgur Ovid
-UCSc_KzY_9WYAx9LghggjVRA:Yugo Asuma
 UCwaS8_S7kMiKA3izlTWHbQg:Maria Marionette
 UCpzxZW5kghGnO5TmAFJQAVw:Aster Arcadia
 UCN68LoM3khS4gdBMiWJO8WA:Aia Amare
 UCFgXWZOUZA2oYHNr6qDmsTQ:Scarle Yonaguni
 UCsb-1aJgiJXJH2feV-zlZRw:Kyo Kaneko
+UCIairB9UMDvqSKfMdv1jmjg:Zaion LanZa
+UCz_ZRw6ak4Foy8zZy0kEprQ:Hex Haywire
+UCy91xBlY_Brh3bnHxKtjrrg:Doppio Dropscythe
+UCO8WcDsF5znr-qsXlzZNpqg:Ver Vermillion
+UCggO2c1unS-oLwTLT0ICywg:Kotoka Torahime
+UChKXd7oqD18qiIYBoRIHTlw:Meloco Kyoran
 twitch.tv/kanae_2434:Kanae
 twitch.tv/chihiro2434:Yuki Chihiro
 twitch.tv/shizurintv:Shizuka Rin
@@ -200,3 +204,4 @@ twitch.tv/reimuendou:Reimu Endou
 twitch.tv/LucaKaneshiro:Luca Kaneshiro
 twitch.tv/mystarias:Mystas Rias
 twitch.tv/AlbanKnox:Alban Knox
+
