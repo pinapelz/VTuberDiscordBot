@@ -1,5 +1,5 @@
 # VTuber Discord Bot
-This is a Java Maven Discord bot using the JDA library. The bot does not rely on APIs to retrieve upcoming livestreams, data is scarped using JSoup at timed intervals. However features beyond the core functionality rely on other APIs.
+This is a Java Maven Discord bot using the JDA library. The bot does not rely on APIs to retrieve upcoming livestreams, data is scarped using JSoup at timed intervals
 
 ## Requirements 
 - Java Maven
