@@ -1,9 +1,7 @@
 # VTuber Discord Bot (Deprecated)
+# New Version At (https://github.com/pinapelz/VStreamTracker)
 This is a Java Maven Discord bot using the JDA library. The bot does not rely on APIs to retrieve upcoming livestreams, data is scarped using JSoup at timed intervals
 
-## Requirements 
-- Java Maven
-All additional dependencies should already be included in the pom.xml file 
 
 - Attention! Create 2 text channels called nijisanji-live and hololive-live to make use of currently live feature!
 ## Building from source
